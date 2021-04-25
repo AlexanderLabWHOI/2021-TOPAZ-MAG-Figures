@@ -3,3 +3,5 @@ final-bacterial-mags_50_10
 final-eukaryotic-mags
 */.ipynb_checkpoints
 rename/old_names/*
+data/combined_graph_tpm_fullpval.csv
+data/filtered_strong_connections_tpm_fullpval.csv

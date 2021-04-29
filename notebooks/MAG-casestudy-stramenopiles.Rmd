@@ -15,7 +15,7 @@ output:
     toc: true
     toc_depth: '3'
 knit: (function(input_file, encoding) {
-  out_dir <- 'docs-Rmd';
+  out_dir <- 'docs';
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
@@ -1101,9 +1101,10 @@ het_C <- generate_list_keggs(subset_mapped_transcripts, hetero_core) #27
 shared_ALL <- generate_list_keggs(subset_mapped_transcripts, shared_allmags) #9
 across_TROPHY <- generate_list_keggs(subset_mapped_transcripts, across_trophy) #341
 ```
+### Explore relative metaT TPM by MAG and heterotrophy score
 
 Plot comparisons
-```{r, fig.height=30, fig.width=15}
+```{r Isolate kegg categories and plot function, fig.height=30, fig.width=15}
 # head(photo_E)
 # Factor MAG list so it is in order of heterotrophy score
 
@@ -1175,13 +1176,13 @@ plot_bymag(het_E, 6)
 
 ```{r, fig.height=35, fig.width=18}
 # svg("across_bubble.svg", w = 18, h = 40)
-plot_bymag(across_TROPHY, 11)
+# plot_bymag(across_TROPHY, 11)
 # dev.off()
 ```
 
 ```{r, fig.height=6, fig.width=14}
 # svg("shared-ALL_bubble.svg", w = 14, h = 6)
-plot_bymag(shared_ALL, 5)
+# plot_bymag(shared_ALL, 5)
 # dev.off()
 ```
 
@@ -1327,8 +1328,29 @@ gene_set_list <- subset_mapped_transcripts %>%
 # View(gene_set_list)
 ```
 
+## Biogeography of hypothesized MAST & Dictyochophyceae MAGs
+Following selection of specific MAGs that may represent phototrophic dictyochophyceae, mixotrophic dictyochophyceae, and MAST - look at the relative TPM expression of these core gene set (see above section for selection) across different ocean regions and depths.
+
+Select MAGs of interest
+```{r}
+
+```
+
+Relative abundance of each MAG by region and depth
+```{r}
+# Bubble plot x3 for each MAG, where region = y and depth = x axis. Try with size frac to confirm it isn't as important?
+```
+
+
+Visualize population-level differential gene expression
+```{r}
+# lollipop plot based on the 27 core gene sets of interest and 3 selected MAGs (based on hylogeny and relativea bundance.)
+# COlor = ocean region for all 27 genes (x-axis), yaxis == lollipop value for transofmred metaT TPM value. 
+```
+
+
 ## Exploration of visuals to look at expression of this gene set
-t-SNE?
+Generate t-SNE plots for SI material.
 ```{r Starting data types}
 # head(metaT_mapped_trophy)
 vita_keggs_list <- as.character(unique(kegg_vita$Selected.KOs))
@@ -1345,8 +1367,10 @@ dim(all_data_24)
 unique(all_data_24$HeterotrophyScore)
 # Prepare numeric data
 # SAMPLES == MAG + ERR
+depths <- c("SRF", "DCM")
+
 numeric_data_SRF <- all_data_24 %>%
-  filter(DEPTH == "SRF") %>% 
+  filter(DEPTH %in% depths) %>% 
   unite(SAMPLE, c("MAG", "run_accession"), sep = "-") %>%
   select(SAMPLE, KO, tpm) %>% distinct() %>%
   group_by(SAMPLE, KO) %>%
@@ -1356,7 +1380,6 @@ numeric_data_SRF <- all_data_24 %>%
   column_to_rownames(var = "SAMPLE")
 dim(numeric_data_SRF)
 # 
-depths <- c("SRF", "DCM")
 meta_data_SRF <- all_data_24 %>%
   filter(DEPTH %in% depths) %>% 
   unite(SAMPLE, c("MAG", "run_accession"), sep = "-") %>%
@@ -1365,102 +1388,77 @@ meta_data_SRF <- all_data_24 %>%
 # head(meta_data_SRF)
 ```
 
-```{r}
+```{r library}
 # install.packages("Rtsne")
 library(Rtsne)
 ```
 
-```{r}
-## Load dataset
-# IR <- iris # Loading the iris dataset into a object called IR
-# 
-# ## Split IR into two objects: 1) containing measurements 2) containing species type
-# IR_data <- IR[ ,1:4] # We are sub-setting IR object such as to include 'all rows' and columns 1 to 4.
-# IR_species <- IR[ ,5] # We are sub-setting IR object such as to include 'all rows' and column 5.
-```
 
-```{r}
-# tsne_results <- Rtsne(IR_data, perplexity=30, check_duplicates = FALSE) # You can change the value of perplexity and see how the plot changes
-```
-
-
-```{r}
+```{r Run at 100 perplexity}
 # tsne_srf_10 <- Rtsne(numeric_data_SRF, perplexity=10, check_duplicates = FALSE)
 # tsne_srf_50 <- Rtsne(numeric_data_SRF, perplexity=50, check_duplicates = FALSE)
 tsne_srf_100 <- Rtsne(numeric_data_SRF, perplexity=100, check_duplicates = FALSE)
 ```
 
-```{r, fig.height=10, fig.width=10}
-par(mfrow=c(2,2))
-# plot(tsne_srf$Y, col = "blue", pch = 19, cex = 0.5)
-# xy <- as.data.frame(tsne_srf$Y)
-# head(xy)
-plot(tsne_srf_100$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$SIZEFRAC), col = "black")
-plot(tsne_srf_50$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$SIZEFRAC), col = "black")
-plot(tsne_srf_100$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$PredictedTrophicMode), col = "black")
-plot(tsne_srf_50$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$PredictedTrophicMode), col = "black")
-# plot(tsne_results$Y, col = "black", bg= IR_species, pch = 21, cex = 1.5) # Second plot: Color the plot by the real species type (bg= IR_species)
-
-# ggplot(xy, aes(x = V1, V2))
-```
-```{r}
+```{r Extract tSNE info and factor}
 # Extract TSNE information
-tsne_df_toplot <- data.frame(x = tsne_srf$Y[,1], y = tsne_srf$Y[,2], meta_data_SRF) %>% 
+tsne_df_toplot <- data.frame(x = tsne_srf_100$Y[,1], y = tsne_srf_100$Y[,2], meta_data_SRF) %>% 
   rownames_to_column(var = "SAMPLE") %>% 
   separate(SAMPLE, c("MAG", "ERR"), sep = "-", remove = FALSE)
 
-head(tsne_df_toplot)
+# Factorization
+depth_order <- c("DCM", "FSW", "SRF", "MIX", "MES", "ZZZ")
+depth_color <- c("#74a9cf", "#969696", "#d0d1e6", "#0570b0", "#023858", "#252525")
 
-tsne_plot_fxn <- function(tsne_df, fill_var){
-  ggplot(tsne_df, aes(x = x, y = y, fill = fill_var)) + 
-    geom_point(shape = 21, aes(fill = fill_var)) +
-    theme_linedraw()
-}
+region_order <- c("IO","MS","NAO","NPO","SAO","SO","SPO","RS")
+region_color <- c("#711518", "#ce536b", "#c76b4a", "#dfa837", "#93b778", "#61ac86", "#657abb", "#67765b")
+
+frac_order <- c("0.8-5.00", "5-20.00", "20-180.00", "180-2000.00")
+frac_color <- c("#f7fcb9", "#addd8e", "#41ab5d", "#004529")
+
+tsne_df_toplot$FRAC_ORDER <- factor(tsne_df_toplot$SIZEFRAC, levels = frac_order)
+tsne_df_toplot$DEPTH_ORDER <- factor(tsne_df_toplot$DEPTH, depth_order)
+tsne_df_toplot$REGION_ORDER <- factor(tsne_df_toplot$REGION, region_order)
+names(frac_color) <- frac_order
+names(depth_color) <- depth_order
+names(region_color) <- region_order
+
+tsne_df_toplot$TROPHY_ORDER <- factor(tsne_df_toplot$PredictedTrophicMode, levels = c("Heterotroph", "Phototroph"))
+trophy_color <- c("#CC3D6D", "#B4CC3D")
+names(trophy_color) <- c("Heterotroph", "Phototroph")
 ```
 
-```{r, fig.height=10, fig.width=10}
-# tsne_plot_fxn(tsne_df_toplot, REGION)
-ggplot(tsne_df_toplot, aes(x = x, y = y, fill = REGION)) + 
-    geom_point(shape = 21, aes(fill = REGION)) +
-    theme_linedraw()
+```{r 4 panel tSNE plot, fig.height=9, fig.width=12}
+# pdf("SI-topography-t-SNE-StramenopileMAGs.pdf", h=9, w=12)
+plot_grid(ggplot(tsne_df_toplot, aes(x = x, y = y, color = REGION_ORDER)) + 
+  geom_point(shape = 19, size = 2, aes(color = REGION_ORDER)) +
+  scale_color_manual(values = region_color) +
+  theme_linedraw() +
+  theme(axis.text = element_blank(),
+        legend.title = element_blank()),
+ggplot(tsne_df_toplot, aes(x = x, y = y, color = FRAC_ORDER)) + 
+  geom_point(shape = 19, size = 2, aes(color = FRAC_ORDER)) +
+  scale_color_manual(values = frac_color) +
+  theme_linedraw() +
+  theme(axis.text = element_blank(),
+        legend.title = element_blank()),
+ggplot(tsne_df_toplot, aes(x = x, y = y, color = DEPTH_ORDER)) + 
+  geom_point(shape = 19, size = 2, aes(color = DEPTH_ORDER)) +
+  scale_color_manual(values = depth_color) +
+  theme_linedraw() +
+  theme(axis.text = element_blank(),
+        legend.title = element_blank()),
+ggplot(tsne_df_toplot, aes(x = x, y = y, color = TROPHY_ORDER)) + 
+  geom_point(shape = 19, size = 2, aes(color = TROPHY_ORDER)) +
+  scale_color_manual(values = trophy_color) +
+  theme_linedraw() +
+  theme(axis.text = element_blank(),
+        legend.title = element_blank()),
+ncol = 2, nrow = 2, labels = c("a", "b", "c", "d"))
+# dev.off()
+
 ```
-
-
-```{r}
-## Generate the t_SNE plot
-par(mfrow=c(1,2)) # To plot two images side-by-side
-plot(tsne_results$Y, col = "blue", pch = 19, cex = 1.5) # Plotting the first image
-plot(tsne_results$Y, col = "black", bg= IR_species, pch = 21, cex = 1.5) # Second plot: Color the plot by the real species type (bg= IR_species)
-```
-
-```{r}
-?Rtsne
-```
-
-```{r}
-head(metaT_mapped_trophy)
-tmp_df <- metaT_mapped_trophy %>% 
-  
-```
-
-
-
-```{r}
-# numeric_data <- subset_mapped_transcripts %>% 
-#   select(MAG, Annotation, KO, PredictedTrophicMode, HeterotrophyScore, SUM) %>% 
-#   # Group by annotation and MAG, remove rows if there is an NA and it is duplicated
-#   group_by(Annotation, MAG) %>% 
-#   filter_at(vars(Annotation), any_vars(!duplicated(.)|is.na(.))) %>%
-#   select(MAG, Annotation, SUM) %>% distinct() %>% 
-#   pivot_wider(id_cols = MAG, names_from = Annotation,
-#               values_from = SUM, values_fill = 0) %>% 
-#   column_to_rownames(var = "MAG")
-# # head(numeric_data)
-# 
-# head(subset_mapped_transcripts)
-# subset_mapped_transcripts %>% 
-#   select(MAG, PredictedTrophicMode, HeterotrophyScore)
-# Numeric data: rows are samples, and columns are genes
-# metadata, rownames are the same as samples
+```{r END}
+sessionInfo()
 ```
 

@@ -1,0 +1,1466 @@
+---
+title: "EUKHeist stramenopile MAG analysis"
+author: "Sarah K Hu"
+date: "11/24/2020"
+output: 
+  html_document:
+    number_sections: true
+    theme: simplex
+    highlight: monochrome
+    collapsed: false
+    toc: true
+    toc_depth: 3
+    toc_float: true
+  pdf_document:
+    toc: true
+    toc_depth: '3'
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs-Rmd';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+MAGs clustered as _Dictyochophyceae_ or putative stramenopiles isolated as a case study to demonstrate how we can use metatranscriptomic data to explore the ecological niches of stramenopiles. Putative stramenopile MAGs were assigned to the broader SAR group (Stramenopiles, Alveolata, and Rhizaria) based on MMSeqs and EUKulele (see Figure 2), but one phylogenetically similar clade was chosen to represent putative heterotrophic stramenopiles likely related to _Dictyochophyceae_. Core questions to address:
+
+*(1)* What is the biogeography of these MAGs with respect to region, depth, and size fraction?
+*(2)* How does the distribution of MAGs related to predicted trophic mode?
+*(3)* What are the core ecological differences among these taxa?
+*(4)* Are the currently SAR-assigned MAGs related to the more heterotrophic _Dictyochophyceae_ species?
+
+
+# Set up R environment & import data
+```{r load libraries, message=FALSE}
+library(tidyverse); library(broom); library(ggtext); library(directlabels)
+library(ggupset); library(cowplot); library(pheatmap)
+```
+
+# Tara Ocean metadata 
+Import and clean metadata for all MAGs.
+```{r Import SampleLists}
+metaT_metadata <- read.delim("../data/SampleList_2020_metaT.txt")
+metaG_metadata <- read.delim("../data/SampleList_2020_metaG.txt")
+# Import Lat & Long
+tmp_metadata <- read.delim("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/PRJEB4352_metaG_wenv.txt")
+
+```
+
+```{r reformat metadata, message = FALSE}
+# Separate ERRs into rows & keep only what I need
+metaG_reformat <- metaG_metadata %>% 
+  separate_rows(ERR_list, sep = ", ") %>% 
+  separate(Sub_region, c("REGION", "subregion"), sep = "-", remove = FALSE) %>%
+  separate(Depth_sizefrac, c("DEPTH", "min", "max"), sep = "-", remove = FALSE) %>% 
+  unite(SIZEFRAC, min, max, sep = "-") %>% 
+  select(-Assembly_group, -ERR_count, run_accession = "ERR_list", REGION, DEPTH, SIZEFRAC) %>% 
+  left_join(tmp_metadata %>% select(run_accession, sampleid = Sample.material, Longitude, Latitude, Station)) %>% 
+  distinct()
+```
+
+
+# Import list of MAGs of interest
+24 MAGs selected by membership to _Dictyochophyceae_ and closely related heterotroph-predicted stramenopile clade.
+```{r Import 24 MAGs}
+mags_tmp <- read.delim("../data/mags-of-interest-24.txt", header = FALSE)
+mags_of_interest <- as.character(mags_tmp$V1);mags_of_interest
+```
+n = 13 from SAR
+n = 11 are dictyochophyte MAGs (derived from EUKulele & MMSeqs taxonomy assignment)
+
+Import MAG files, including a name schematic key for the MAG TOPAZ-based naming. Also add the estimated taxonomy assignments.
+```{r Import MAG files}
+mag_counts_updated <- read.csv("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/MAG_tpm.csv")
+mag_rename_key <- read.delim("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/renamed-eukaryotic-mags.tsv", sep = "\t")
+
+# Import MAG taxonomic assignments (Feb 2, 2021)
+mag_taxonomy <- read.csv("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/2021-marzoanmmetsp-estimated-taxonomy-levels.csv")
+# head(mag_taxonomy)
+```
+
+Import list of MAGs with EUKulele taxonomy assignment at lower threshold (n=33); this way it includes more MAGs with dictyochophyte assignments. Incorporate BUSCO completeness and contamination to pare down the list.
+```{r Import additional QC}
+euk_thres <- read.delim("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/list_dictyochophyceae.txt", header = FALSE)
+buscos <- read.csv("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/EUK_BUSCO_CC.csv")
+```
+
+Isolate TPM MAG abundances.
+```{r Sum by TPM}
+mag_tpm <- mag_counts_updated %>% 
+  left_join(mag_rename_key, by = c("Genome" = "old_mag_name")) %>% 
+  filter(new_mag_name %in% mags_of_interest) %>% 
+  pivot_longer(cols = starts_with("ERR"), names_to = "run_accession", values_to = "tpm") %>%
+  left_join(metaG_reformat) %>% 
+  select(mag = new_mag_name, -Genome, everything()) %>% 
+  data.frame
+# head(mag_tpm)
+# length(unique(mag_tpm$mag))
+```
+
+
+# MAG relative abundance by location
+Sum TPM of MAGs based on Size Fraction, Location, and Depth
+```{r sum tpm of mags by location, fig.height=3, fig.width=4}
+mag_tpm_location <- mag_tpm %>% 
+  filter(!is.na(REGION)) %>%
+  group_by(mag, DEPTH, REGION, SIZEFRAC) %>% 
+  summarise(mag_tpm = sum(tpm)) %>% 
+  mutate(log_mag_tpm = log(mag_tpm)) %>% 
+  unite(SAMPLE, REGION, DEPTH, SIZEFRAC, sep = " ", remove = FALSE) %>% 
+  filter(!is.na(mag_tpm))
+# head(mag_tpm_location)
+hist(mag_tpm_location$log_mag_tpm)
+```
+
+Save output R objects as data checkpoints to add to available repo.
+```{r Check point save whole TPM}
+# save(mag_tpm_location, mag_tpm, file = "../data/MAG-casestudy-Stramenopile-2021.RData")
+```
+
+
+## Generate heatmap of MAG relative abundance by location (SI)
+
+Load existing data from R objects.
+```{r Import existing stramenopile MAG data}
+load("../data/MAG-casestudy-Stramenopile-2021.RData", verbose = TRUE)
+```
+
+
+Visualize MAGs with pheatmap
+```{r Format for pheatmap input}
+pheat_mags <- mag_tpm_location %>% 
+  select(mag, SAMPLE, log_mag_tpm) %>% 
+  filter(!is.na(log_mag_tpm)) %>%
+  mutate_if(is.numeric, function(x) ifelse(is.infinite(x), 0, x)) %>% 
+  pivot_wider(id_cols = SAMPLE, names_from = mag, values_from = log_mag_tpm, values_fill = 0) %>% 
+  column_to_rownames(var = "SAMPLE")
+```
+```{r Pheatmap annotation}
+# Obtain annotation
+annotate_mags <- mag_tpm_location %>%
+  ungroup() %>% 
+  filter(!is.na(REGION)) %>%
+  select(SAMPLE, REGION, DEPTH, SIZEFRAC) %>% 
+  distinct() %>% 
+  column_to_rownames(var = "SAMPLE")
+
+rownames(annotate_mags) <- rownames(pheat_mags)
+
+# Specify color schema
+annotation_colors = list(
+  REGION = c(IO= "#711518", MS= "#ce536b", NAO= "#c76b4a", NPO= "#dfa837", SAO= "#93b778", SO= "#61ac86", SPO= "#657abb", RS= "#67765b"),
+  DEPTH = c(DCM= "#74a9cf", FSW= "#969696", SRF= "#d0d1e6", MIX= "#0570b0", MES= "#023858", ZZZ= "#252525"),
+  SIZEFRAC = c(`0.8-5.00` = "#f7fcb9",`180-2000.00` = "#004529", `20-180.00` = "#41ab5d",`5-20.00` = "#addd8e"))
+```
+
+MAG relative abundace by sample and TPM.
+```{r Pheatmap, fig.height=16, fig.width=15}
+# pdf("../si-figures/SI-SAR-Dictyocho-MAG-MAG-relabun-bysample.pdf", h = 16, w = 15)
+pheatmap(pheat_mags,
+         annotation_row = annotate_mags,
+         annotation_colors = annotation_colors,
+         scale = "none",
+         cluster_cols = TRUE,
+         cluster_rows = TRUE,
+         clustering_method = "average",
+         cellwidth = 10, cellheight = 10,
+         main = "MAG Relative Abundance (TPM)")
+# dev.off()
+```
+# Biogeography of MAGs
+
+Plot MAGs based on global distribution - TPM.
+```{r Import worldmap library}
+library(rworldmap)
+```
+
+Figure out latitute and longitude
+```{r lat long format}
+mag_tpm_tmp <- mag_tpm %>% 
+  mutate(lat_1 = round(Latitude, digits = 1),
+         long_1 = round(Longitude, digits = 1),
+    lat_2 = round(Latitude, digits = 2),
+         lat_3 = round(Latitude, digits = 3),
+         long_2 = round(Longitude, digits = 2),
+         long_3 = round(Longitude, digits = 3))
+# length(unique(mag_tpm_tmp$lat_1))
+# length(unique(mag_tpm_tmp$long_1))
+```
+
+Make summary data frame by latitute and longitude.
+```{r summary by lat and long}
+mag_tpm_map <- mag_tpm_tmp %>% 
+  filter(tpm > 0) %>% 
+  filter(!is.na(REGION)) %>% 
+  group_by(mag, DEPTH, REGION, SIZEFRAC, lat_1, long_1) %>%
+  summarise(mag_tpm_latlong = sum(tpm)) %>% 
+  mutate(log_mag_tpm = log(mag_tpm_latlong)) %>% 
+  unite(SAMPLE, REGION, DEPTH, SIZEFRAC, sep = " ", remove = FALSE) %>% 
+  filter(!is.na(mag_tpm_latlong)) %>% 
+  mutate(Location = paste(lat_1, long_1))
+```
+
+Get background world map
+```{r Format background world map}
+map_get_world <- function(resolution="coarse"){
+    worldMap <- rworldmap::getMap(resolution = resolution) # Change to "coarse" for global maps / "low" for regional maps
+    world.points <- fortify(worldMap)
+    world.points$region <- world.points$id
+    world.df <- world.points[,c("long","lat","group", "region")]
+  }
+
+map_world <- function(color_continents = "#969696", color_borders = "#969696", resolution = "coarse") {
+  world.df <- map_get_world(resolution)
+  map <- ggplot() +
+    geom_polygon(data = world.df, aes(x=long, y = lat, group = group), fill=color_continents, color=color_borders) +
+    # scale_fill_manual(values= color_continents , guide = FALSE) +
+    scale_x_continuous(breaks = (-4:4) * 45) +
+    scale_y_continuous(breaks = (-2:2) * 30) +
+    xlab("Longitude") + ylab("Latitude") +
+    coord_fixed(1.3) +
+    theme_bw()
+  # species_map <- species_map + coord_map ()  # Mercator projection
+  # species_map <- species_map + coord_map("gilbert") # Nice for the poles
+  return(map)
+}
+```
+
+Factor for depths for the map.
+```{r Factor for depths}
+depth_order <- c("DCM", "FSW", "SRF", "MIX", "MES", "ZZZ")
+depth_color <- c("#74a9cf", "#969696", "#d0d1e6", "#0570b0", "#023858", "#252525")
+mag_tpm_map$DEPTH_ORDER <- factor(mag_tpm_map$DEPTH, levels = depth_order)
+# 
+mag_order <- c("TOPAZ_MSS1_E028","TOPAZ_SAS1_E003","TOPAZ_NAX1_E011","TOPAZ_IOS1_E045","TOPAZ_SAS1_E036","TOPAZ_NAS1_E036","TOPAZ_MSS1_E004","TOPAZ_SAD1_E033","TOPAZ_MSS1_E023","TOPAZ_NPS1_E025","TOPAZ_MSS1_E011","TOPAZ_NPS1_E005","TOPAZ_SPS1_E018","TOPAZ_SPS1_E054","TOPAZ_MSD1_E003","TOPAZ_MSS1_E026","TOPAZ_SAS1_E035","TOPAZ_NAS1_E023","TOPAZ_SPS1_E030","TOPAZ_SPS1_E074","TOPAZ_SPD1_E019","TOPAZ_SPS1_E070","TOPAZ_SAS1_E034","TOPAZ_SPS1_E066")
+mag_tpm_map$MAG_ORDER <- factor(mag_tpm_map$mag, levels = mag_order)
+```
+
+
+```{r Map projection figure-SI, fig.height=20, fig.width=17}
+# pdf("../si-figures/SI-stramenopile-MAG-map.pdf", w=17,h=20)
+map_world() +
+  geom_jitter(data = mag_tpm_map,
+              aes(x = long_1, y = lat_1, 
+                  fill = DEPTH_ORDER, 
+                  size = mag_tpm_latlong),
+              shape = 21, color = "black") +
+  scale_size_continuous(range = c(1,14)) +
+  scale_fill_manual(values = depth_color) +
+  facet_wrap(MAG_ORDER ~ ., ncol = 4) +
+  theme(strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 14, hjust = 1, vjust = 1),
+        axis.text = element_text(size = 10, hjust = 1, vjust = 1),
+        legend.title = element_blank())
+# dev.off()
+```
+
+
+# Investigate metatranscriptome reads mapped to MAGs
+
+Import the results from metatranscriptome mapping onto putative dictyochophyte and SAR group MAGs. Explore trophic roles and shared/unique functional profiles.
+
+## Import and compile raw metatranscriptome mapping information
+For loop to determine summed transcript counts that hit the 11 core putative dictyochophyte MAGs.
+```{r for loop to compile tpm counts}
+# For loop to import all data and compile
+summed_counts <- list.files(path = "/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data",pattern = "tpm.summedcounts")
+# summed_counts
+# rm(imported)
+# rm(compiled_metaT_hits)
+for (a in summed_counts) {
+  imported <- read.csv(paste("/Users/sarahhu/Desktop/Projects/eukheist_proj/dictyochophyceae-analysis/input-data/", a, sep = ""))
+  names <- unlist(strsplit(a,".tpm.summedcounts"))
+  imported$MAG <- names[1]
+  if (!exists("compiled_metaT_hits")) {
+    compiled_metaT_hits <- imported
+  } else {
+    compiled_metaT_hits <- rbind(compiled_metaT_hits, imported)
+  }
+  rm(imported)
+}
+```
+
+```{r Rename with topaz}
+# Rename MAGs with TOPAZ name schematic
+metaT_mapped <- compiled_metaT_hits %>%  
+  left_join(mag_rename_key, by = c("MAG" = "old_mag_name")) %>% 
+  select(-MAG) %>% 
+  select(MAG = new_mag_name, everything()) %>% 
+  data.frame
+# head(metaT_mapped)
+```
+
+Checkpoint for saving the metatranscriptome data with TOPAZ naming schematic.
+```{r Save metaT data as R object}
+# save(metaT_mapped, mag_rename_key, file = "../data/MAG-casestudy-Stramenopile-metaT-2021.RData")
+```
+
+
+## Analysis of KEGG identities among MAGs and predicted trophic mode
+Match KEGG identities to kegg module information and curated list of kegg pathways of interest.
+
+Import metatranscriptome data from MAGs of interest.
+```{r Import exisiting metaT mapped data}
+load("../data/MAG-casestudy-Stramenopile-metaT-2021.RData", verbose=T)
+```
+
+
+```{r Include predicted trophic mode}
+trophy <- read.csv("../data/trophy_data.csv")
+# head(mag_rename_key)
+# head(trophy)
+trophy_refine <- trophy %>% 
+  left_join(mag_rename_key, by = c("MAGs" ="old_mag_name")) %>% 
+  select(-MAGs)
+
+mag_order
+
+# write_delim(filter(trophy_refine, new_mag_name %in% mag_order) %>% distinct(), path = "trophy-24mags.txt", delim = "\t")
+```
+
+
+```{r Get list of phototrophy predicted MAGs}
+metaT_mapped_trophy <- metaT_mapped %>% 
+  left_join(trophy_refine, by = c("MAG" = "new_mag_name"))
+
+# Get list of phototrophy predicted MAGs
+tmp <- metaT_mapped_trophy %>% 
+  filter(PredictedTrophicMode == "Phototroph")
+photo_mags <- as.character(unique(tmp$MAG))
+# length(photo_mags)
+head(metaT_mapped)
+```
+
+### Dendrogram of MAGs
+
+```{r Revise data structure for dendrogram}
+MAG_dendro_binary <- metaT_mapped %>% 
+  select(MAG, KO) %>% 
+  add_column(BIN = 1) %>% 
+  pivot_wider(names_from = "KO", values_from = BIN, values_fill = 0) %>%
+  column_to_rownames(var = "MAG") %>%
+  data.frame
+head(MAG_dendro_binary)
+# table(MAG_dendro_binary$BIN)
+# ?pivot_wider
+```
+```{r Cluster with hclust}
+library(ggdendro)
+cluster_mags <- hclust(dist((MAG_dendro_binary)), method = "average")
+dendro_mags <- dendro_data(as.dendrogram(cluster_mags), type = "rectangle")
+
+# head(dendro_mags)
+labeled_dendro_order <- as.character(dendro_mags$labels$label)
+# labeled_dendro_order
+```
+Add trophy information
+```{r Incorporate predicted trophic mode}
+labs <- label(dendro_mags)
+labs_refined <- labs %>% 
+  mutate(group = case_when(
+    label %in% photo_mags ~ "Phototroph",
+    TRUE ~ "Heterotroph"
+  ))
+# head(labs_refined)
+```
+
+Plot dendrogram - derived from the presence/absence of known orthologs
+```{r Plot dendrogram, fig.height=10, fig.width=7}
+dendro_mag_plot <- ggplot(segment(dendro_mags)) +
+  geom_segment(aes(x = x, y = y, xend = xend, 
+    yend = yend)) + 
+  coord_flip() + 
+  scale_y_reverse(expand = c(1, 1)) +
+  geom_text(aes(x = x, y = y, label = label, angle = 0, 
+    hjust = 0, color = labs_refined$group), 
+    data = label(dendro_mags), fontface = "bold", size = 5) + 
+  scale_color_manual(values = c("#CC3D6D", "#B4CC3D")) +
+  theme_dendro() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+```{r Save dendrogram plot, fig.height=10, fig.width=7}
+# svg("dendrogram-plot-trophy.svg", w=7, h=10)
+dendro_mag_plot 
+# dev.off()
+```
+
+
+## Make pie charts to represent core location of each MAG
+```{r Extract dendrogram order of MAGs}
+mag_pie_order <- rev(labeled_dendro_order)
+```
+
+## By region only
+Prepare data frame and factor.
+```{r Prep df by region}
+region_mags_df <- mag_tpm_location %>% 
+  replace_na(list(mag_tpm=0)) %>% 
+  group_by(REGION, mag) %>% 
+    summarise(mag_sum_tpm = sum(mag_tpm))
+
+region_order <- c("IO","MS","NAO","NPO","SAO","SO","SPO","RS")
+region_color <- c("#711518", "#ce536b", "#c76b4a", "#dfa837", "#93b778", "#61ac86", "#657abb", "#67765b")
+region_mags_df$REGION_ORDER <- factor(region_mags_df$REGION, levels = region_order)
+region_mags_df$MAG_ORDER <- factor(region_mags_df$mag, levels = mag_pie_order)
+names(region_color) <- region_order
+# View(region_dictyo)
+```
+Plot pies by region
+```{r plot pies by region, fig.width=3, fig.height=10}
+region_mag <- region_mags_df %>% 
+  add_column(fake = "fake") %>% 
+  ggplot(aes(x = fake, fill = REGION_ORDER, y = mag_sum_tpm)) +
+  geom_bar(color = "white", stat = "identity", position = "fill") +
+  scale_fill_manual(values = region_color) +
+  # theme_linedraw() +
+  coord_polar(theta = "y") +
+  # coord_flip() +
+  facet_wrap(~MAG_ORDER, ncol = 1) +
+  # scale_y_continuous(expand = c(0,0)) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        strip.text = element_text(size = 3),
+        # plot.margin = element_blank(),
+        plot.background = element_blank()) +
+  labs(y = "MAG Abundance TPM", x = "Putative Dictyochophyte MAGs") #+ 
+  # theme(strip.text = element_text(size = rel(3.0), vjust = -4.0), 
+          # panel.margin.y = unit(-2, "lines"))
+# region_mag
+```
+
+## By depth
+Prepare data frame and factor.
+```{r prep data frame by depth}
+depth_mags_df <- mag_tpm_location %>% 
+  replace_na(list(mag_tpm=0)) %>% 
+  group_by(DEPTH, mag) %>% 
+    summarise(mag_sum_tpm = sum(mag_tpm))
+depth_order <- c("DCM", "FSW", "SRF", "MIX", "MES", "ZZZ")
+depth_color <- c("#74a9cf", "#969696", "#d0d1e6", "#0570b0", "#023858", "#252525")
+depth_mags_df$DEPTH_ORDER <- factor(depth_mags_df$DEPTH, levels = depth_order)
+
+depth_mags_df$MAG_ORDER <- factor(depth_mags_df$mag, levels = mag_pie_order)
+names(depth_color) <- depth_order
+# View(depth_dictyo)
+```
+Plot pies by depth
+```{r plot pies by depth, fig.width=3, fig.height=10}
+depth_mag <- depth_mags_df %>% 
+  add_column(fake = "fake") %>% 
+  ggplot(aes(x = fake, fill = DEPTH_ORDER, y = mag_sum_tpm)) +
+  geom_bar(color = "white", stat = "identity", position = "fill") +
+  scale_fill_manual(values = depth_color) +
+  # theme_linedraw() +
+  coord_polar(theta = "y") +
+  # coord_flip() +
+  facet_wrap(~MAG_ORDER, ncol = 1) +
+  # scale_y_continuous(expand = c(0,0)) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        strip.text = element_text(size = 4)) +
+  labs(y = "MAG Abundance TPM", x = "Putative Dictyochophyte MAGs")
+```
+
+## By size fraction
+Prepare data frame and factor.
+```{r prep df by size frac}
+frac_mags_df <- mag_tpm_location %>% 
+  replace_na(list(mag_tpm=0)) %>% 
+  group_by(SIZEFRAC, mag) %>% 
+    summarise(mag_sum_tpm = sum(mag_tpm))
+frac_order <- c("0.8-5.00", "5-20.00", "20-180.00", "180-2000.00")
+frac_color <- c("#f7fcb9", "#addd8e", "#41ab5d", "#004529")
+frac_mags_df$FRAC_ORDER <- factor(frac_mags_df$SIZEFRAC, levels = frac_order)
+
+frac_mags_df$MAG_ORDER <- factor(frac_mags_df$mag, levels = mag_pie_order)
+names(frac_color) <- frac_order
+# View(frac_dictyo)
+```
+Plot pies by size fraction
+```{r plot pies by size fraction, fig.width=3, fig.height=10}
+frac_mag <- frac_mags_df %>% 
+  add_column(fake = "fake") %>% 
+  ggplot(aes(x = fake, fill = FRAC_ORDER, y = mag_sum_tpm)) +
+  geom_bar(color = "white", stat = "identity", position = "fill") +
+  scale_fill_manual(values = frac_color) +
+  # theme_linedraw() +
+  coord_polar(theta = "y") +
+  # coord_flip() +
+  facet_wrap(~MAG_ORDER, ncol = 1) +
+  # scale_y_continuous(expand = c(0,0)) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        strip.text = element_text(size = 4)) +
+  labs(y = "MAG Abundance TPM", x = "Putative Dictyochophyte MAGs")
+```
+
+## Bubble plot to show rel abun of each MAG
+
+Prepare data frame and factor.
+```{r prep data frame to get total rel abun}
+head(mag_tpm_location)
+
+total_relabun_mag <- mag_tpm_location %>% 
+  replace_na(list(mag_tpm=0)) %>% 
+  group_by(mag) %>% 
+    summarise(mag_sum_tpm = sum(mag_tpm))
+
+total_relabun_mag$MAG_ORDER <- factor(total_relabun_mag$mag, levels = mag_pie_order)
+```
+
+```{r plot relative}
+rel_abun <- total_relabun_mag %>% 
+  add_column(fake = "fake") %>% 
+  ggplot(aes(x = fake, size = mag_sum_tpm, y = mag)) +
+    geom_point(color = "black") +
+    scale_size_continuous(range = c(1, 17)) +
+  facet_wrap(~MAG_ORDER, ncol = 1) +
+  # scale_y_continuous(expand = c(0,0)) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        strip.text = element_text(size = 4))
+```
+
+
+Compiled plots. Same order as the dendrogram above, so these pie charts can be lined up with the dendrogram.
+```{r combine pies, fig.width=15, fig.height=20}
+# svg("pies-mag-abun-withoutlabels.svg", h = 20, w = 15)
+# plot_grid(region_mag, depth_mag, frac_mag, rel_abun, nrow = 1)
+
+plot_grid(region_mag + theme(strip.text = element_text(size = rel(3.0), vjust = -4.0),
+          panel.margin.y = unit(-2, "lines")),
+          depth_mag+ theme(strip.text = element_text(size = rel(3.0), vjust = -4.0),
+          panel.margin.y = unit(-2, "lines")),
+          frac_mag+ theme(strip.text = element_text(size = rel(3.0), vjust = -4.0),
+          panel.margin.y = unit(-2, "lines")),
+          rel_abun,
+          nrow = 1)
+# dev.off()
+```
+
+## Intersection of transcripts
+
+First, incorporate KEGG module information into mapped metatranscriptome data.
+```{r Import KEGG  module information}
+keggs_to_match <- select(metaT_mapped, KO) %>% distinct()
+# head(keggs_to_match)
+```
+
+Import provided KEGG information (module information) and list of KEGG IDs selected to model trophic mode.
+```{r Import vita-selected KEGG IDs}
+kegg_vita <- read.csv("../data/vita_vars.csv")
+load(file = "../data/KEGG-key.RData", verbose = TRUE)
+
+```
+```{r Compile vita-selected IDs}
+kegg_key_dictyo <- keggs_to_match %>% 
+  left_join(kegg_vita %>% add_column(VITA = "vita"), by = c("KO" = "Selected.KOs")) %>% 
+  left_join(kegg, by = c("KO" = "KO_number")) %>%
+  data.frame
+  
+# head(kegg_key_dictyo)
+# dim(keggs_to_match);dim(kegg_key_dictyo)
+```
+
+Supplementary figure showing shared and unique metatranscriptome reads among selected MAGs.
+```{r SI intersection upset, fig.height=15, fig.width=15}
+# pdf("../si-figures/SI-SAR-Dictyocho-MAG-KEGG-intersection.pdf", w = 15, h = 15)
+metaT_mapped_trophy %>% 
+  type.convert(as.is = TRUE) %>%
+  pivot_longer(cols = starts_with("ERR"), names_to = "SAMPLEID", values_to = "transcript_tpm") %>% 
+  left_join(kegg_key_dictyo %>% select(KO, B) %>% distinct()) %>% 
+  group_by(MAG, KO, B) %>% 
+    summarise(transcript_tpm_sum = sum(transcript_tpm)) %>% 
+    ungroup() %>% 
+  group_by(KO, B) %>% 
+    summarise(transcript_to_mag = list(MAG)) %>% 
+  ggplot(aes(transcript_to_mag)) +
+    # geom_bar(color = "black", fill = "#AC7070", width = 0.7) +
+    geom_bar(color = "black", width = 0.7, aes(fill = B)) +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_x_upset(order_by = "freq",
+                n_intersections = 30, position = "top") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  theme_combmatrix(combmatrix.label.text = element_text(color = "black", size = 14),
+                   combmatrix.label.extra_spacing = 10) +
+  theme(axis.text = element_text(color = "black", face = "bold", size = 12),
+        legend.title = element_blank()) +
+  labs(x = "Frequency across MAGs",
+       y = "Shared transcripts",
+       title = "Metatranscriptome reads that mapped to dictyochophyte MAGs")
+# dev.off()
+```
+
+## Subset categories to look at shared metabolic potential
+Categories to obtain from the MAGs:
+* Phototrophy-exclusive: Among the phototrophy-predicted MAGs, what KEGG IDs are present in any of the phototrophy-predicted MAGs and absent from the heterotrophy MAGs?
+* Phototrophy-core: What KEGG IDs are present in ALL (shared in all MAGs) phototrophy-predicted MAGs? (regardless of presence in heterotrophy-predicted MAGs)
+* Heterotrophy-exclusive: Among the heterotrophy-predicted MAGs, what KEGG IDs are present in any of the heterotrophy MAGs and absent from the phototrophy MAGs?
+* Heterotrophy-core: What KEGG IDs are shared in ALL heterotrophy-predicted MAGs? (regardless of presence in phototrophy-predicted MAGs)
+* Core across trophic strategy: What KEGG IDs are found in both heterotrophy and phototrophy MAGs? KEGG IDs must be found in both sets of MAGs at least once.
+* Core shared transcripts: What KEGG IDs are shared among ALL MAGs? (PCA analysis too)
+* PCA analysis with vita-selected KEGG IDs
+
+```{r Extract list of phototrophy MAGs}
+# Get list of phototrophy predicted MAGs
+tmp <- metaT_mapped_trophy %>% 
+  filter(PredictedTrophicMode == "Phototroph")
+photo_mags <- as.character(unique(tmp$MAG))
+
+tmp2 <- metaT_mapped_trophy %>% 
+  filter(PredictedTrophicMode != "Phototroph")
+hetero_mags <- as.character(unique(tmp2$MAG))
+
+# Take stock
+length(photo_mags) # n=11
+length(hetero_mags) # n=13
+```
+
+Set up data frame to sub-sample specific groupings.
+```{r Generate data frame to classify by KEGG prevalence}
+classify_keggs <- metaT_mapped %>% 
+  select(-starts_with("ERR")) %>% 
+  add_column(value = 1) %>% 
+  pivot_wider(names_from = MAG, values_from = value, values_fill = NA)
+# head(classify_keggs)
+```
+
+Phototrophy-exclusive: Among the phototrophy-predicted MAGs, what KEGG IDs are present in any of the phototrophy-predicted MAGs and absent from the heterotrophy MAGs?
+Also determine how many KEGG ids are present in all of the MAGs, only found in 1, and in at least 2.
+```{r Phototrophy-exclusive}
+# Phototrophy-exclusive
+num_mags_photo <- length(photo_mags)
+
+photo_excl <- classify_keggs %>% 
+  filter_at(all_of(hetero_mags), all_vars(is.na(.))) %>% 
+  # select(photo_mags) %>% # Should be sporadically 1s
+  # select(hetero_mags) %>%  #should all be NAs
+  select(KO, photo_mags) %>% column_to_rownames(var = "KO") %>% 
+  # Document number of times KOs appears across MAGs
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(Photo_excl_class = case_when(
+    present == num_mags_photo ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, Photo_excl_class) %>% distinct() %>% 
+  add_column(Phototrophy_exclusive = "photo-excl")
+# head(photo_excl)
+# length(unique(photo_excl$KO))
+```
+
+
+Phototrophy-core: What KEGG IDs are present in ALL (shared in all MAGs) phototrophy-predicted MAGs? (regardless of presence in heterotrophy-predicted MAGs)
+```{r Phototrophy core}
+# Phototrophy-core
+num_mags_photo <- length(photo_mags)
+
+photo_core <- classify_keggs %>% 
+  filter_at(all_of(photo_mags), all_vars(!is.na(.))) %>% 
+  # select(photo_mags) %>% # Should all be 1s
+  # select(hetero_mags) #%>%  # Should be/can be sporadic
+  select(KO, photo_mags) %>% column_to_rownames(var = "KO") %>% 
+  # Document number of times KOs appears across MAGs
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(Photo_core_class = case_when(
+    present == num_mags_photo ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, Photo_core_class) %>% distinct() %>%
+  add_column(Phototrophy_core = "photo-core")
+# head(photo_core)
+# dim(photo_core)
+```
+
+Heterotrophy-exclusive: Among the heterotrophy-predicted MAGs, what KEGG IDs are present in any of the heterotrophy MAGs and absent from the phototrophy MAGs?
+And determine the KEGGs that appear in all MAGs, only 1, and in at least 2.
+```{r Heterotrophy exclusive}
+# Heterotrophy-exclusive
+num_mags_hetero <- length(hetero_mags)
+# head(classify_keggs)
+
+hetero_excl <- classify_keggs %>%
+  filter_at(all_of(photo_mags), all_vars(is.na(.))) %>% 
+  # select(photo_mags) %>% # Should all be NA
+  # select(hetero_mags) %>%  # Should/can be sporadically 1
+  # head
+  select(KO, hetero_mags) %>% column_to_rownames(var = "KO") %>% 
+  # Document number of times KOs appears across MAGs
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(Het_excl_class = case_when(
+    present == num_mags_hetero ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, Het_excl_class) %>% distinct() %>%
+  add_column(Heterotrophy_exclusive = "het-excl")
+# dim(hetero_excl)
+# head(hetero_excl)
+```
+
+Heterotrophy-core: What KEGG IDs are shared in ALL heterotrophy-predicted MAGs? (regardless of presence in phototrophy-predicted MAGs)
+```{r Heterotrophy core}
+# Heterotrophy-core
+num_mags_hetero <- length(hetero_mags)
+
+hetero_core <- classify_keggs %>%
+  filter_at(all_of(hetero_mags), all_vars(!is.na(.))) %>% 
+  # select(photo_mags) #%>% # Should/can be sporadically 1
+  # select(hetero_mags) %>%  # Should all be 1
+  # head
+  select(KO, hetero_mags) %>% column_to_rownames(var = "KO") %>% 
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(Het_core_class = case_when(
+    present == num_mags_hetero ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, Het_core_class) %>% distinct() %>%
+  add_column(Heterotrophy_core = "het-core")
+# head(hetero_core)
+```
+
+Core across trophic strategy (across trophy): What KEGG IDs are found in both heterotrophy and phototrophy MAGs? KEGG IDs must be found in both sets of MAGs at least once.
+Core shared transcripts (shared MAGs): What KEGG IDs are shared among ALL MAGs? (PCA analysis too)
+```{r Across and shared among trophic modes}
+# Core across trophic strategy
+## Must appear at least once in PHOTO and HETERO lists
+num_all_mags <- num_mags_hetero + num_mags_photo
+# num_all_mags
+# tmp <- classify_keggs %>% 
+across_trophy <- classify_keggs %>%
+  filter_at(vars(hetero_mags), any_vars(!is.na(.))) %>% 
+  filter_at(vars(photo_mags), any_vars(!is.na(.))) %>% 
+  # select(photo_mags) %>% # Should/can be sporadically 1
+  # select(hetero_mags) %>%  # Should/can be sporadically 1
+  column_to_rownames(var = "KO") %>% 
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(Trophy_core_class = case_when(
+    present == num_all_mags ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, Trophy_core_class) %>% distinct() %>% 
+  add_column(Across_trophy= "core-across")
+
+# Should be zero for both instances
+# tmp_result <- tmp %>% 
+#   filter_at(vars(photo_mags), all_vars(is.na(.)))
+#   # filter_at(vars(hetero_mags), all_vars(is.na(.)))
+# head(tmp_result)
+
+# Core shared transcripts: no NAs listed under any MAG
+shared_allmags <- classify_keggs %>%
+  filter_at(vars(starts_with("TOPAZ")), all_vars(!is.na(.))) %>% 
+  column_to_rownames(var = "KO") %>% 
+  mutate(present = (rowSums(!is.na(.)))) %>% 
+  mutate(All_shared_class = case_when(
+    present == num_all_mags ~ "All MAGs",
+    present == 1 ~ "Only 1 MAG",
+    present >= 2 ~ "At least 2 MAGs"
+  )) %>% rownames_to_column(var = "KO") %>% 
+  select(KO, All_shared_class) %>% distinct() %>% 
+  add_column(Shared_MAGs = "shared-all")
+# table(shared_allmags$All_shared_class)
+```
+
+Take stock in the KEGG ID lists generated, join all and explore.
+```{r Obtain complete KEGG classifications}
+kegg_classification_all <- shared_allmags %>% 
+  full_join(across_trophy) %>% 
+  full_join(hetero_core) %>% 
+  full_join(hetero_excl) %>% 
+  full_join(photo_core) %>% 
+  full_join(photo_excl)
+head(kegg_classification_all)
+# Kegg IDs appear once in this data frame.
+# dim(kegg_classification_all); length(unique(kegg_classification_all$KO))
+```
+
+```{r Plot by category and kegg module membership, fig.height=5, fig.width=9}
+plot_bar_categories <- kegg_classification_all %>% 
+  pivot_longer(cols = -c(KO, ends_with("_class"))) %>% 
+  mutate(Class = case_when(
+    name == "Heterotrophy_exclusive" ~ Het_excl_class,
+    name == "Phototrophy_exclusive" ~ Photo_excl_class,
+    name == "Heterotrophy_core" ~ Het_core_class,
+    name == "Phototrophy_core" ~ Photo_core_class,
+    name == "Across_trophy" ~ Trophy_core_class,
+    name == "Shared_MAGs" ~ All_shared_class,
+    TRUE ~ "Else"
+  )) %>%
+  filter(!is.na(value)) %>% 
+  left_join(kegg_key_dictyo %>% select(KO, B) %>% distinct()) %>%
+  type.convert(as.is = TRUE) %>%
+  mutate(Kegg_module = case_when(
+    is.na(B) ~ "Not annotated",
+    TRUE ~ B
+  )) %>% 
+  pivot_longer(cols = c(Kegg_module, Class), names_to = "Fill_type", values_to = "Fill_class") %>% 
+  data.frame
+
+
+## FACTORIZATION
+a <- plot_bar_categories %>% filter(Fill_type == "Class") %>% select(Fill_class) %>% distinct()
+class_order <- as.character(unique(a$Fill_class))
+class_greys <- c("#525252", "#969696", "#cccccc")
+
+kegg_order <- c("Energy metabolism", "Carbohydrate and lipid metabolism", "Nucleotide and amino acid metabolism", "Metabolism", "Environmental information processing", "Genetic information processing", "Secondary metabolism", "Gene set","Not annotated")
+kegg_color <- c("#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f0f0f0")
+# unique(plot_bar_categories$Fill_class)
+
+plot_bar_categories$FILL_CLASS_ORDER <- factor(plot_bar_categories$Fill_class, levels = c(class_order, kegg_order))
+
+all_colors <- c(class_greys, kegg_color)
+```
+
+```{r bar plot series for categories, fig.height=6, fig.width=8}
+# Final ggplot
+# svg("panel-barplots-bycategory.svg", h = 6, w = 8)
+plot_grid(
+  plot_bar_categories %>% 
+  filter(name != "Across_trophy") %>%
+  ggplot(aes(x = Fill_type, fill = FILL_CLASS_ORDER)) +
+    geom_bar(stat = "count", aes(fill = FILL_CLASS_ORDER), color = "black", width = 0.6) +
+    scale_fill_manual(values = all_colors) +
+    facet_grid(vars(name), 
+               space = "free", scales = "free") +
+    coord_flip() +
+    theme_bw() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 650), breaks = c(seq(from = 0, to = 800, by = 100))) +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 12, color = "black"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_text(angle = 0, hjust = 0, vjust = 0.5),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) +
+  labs(x = "", y = "Number of Keggs"),
+  plot_bar_categories %>% 
+  filter(name == "Across_trophy") %>%
+  ggplot(aes(x = Fill_type, fill = FILL_CLASS_ORDER)) +
+    geom_bar(stat = "count", aes(fill = FILL_CLASS_ORDER), color = "black", width = 0.6) +
+    scale_fill_manual(values = all_colors) +
+    facet_grid(vars(name), 
+               space = "free", scales = "free") +
+    coord_flip() +
+    theme_bw() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0,3500)) +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 12, color = "black"),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_text(angle = 0, hjust = 0, vjust = 0.5),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "none",
+        panel.grid = element_blank()) +
+  labs(x = "", y = "Number of orthologs"),
+  ncol = 1, axis = c("lr"), align = c("vh"),
+  rel_heights = c(1, 0.3))
+# dev.off()
+```
+
+## Metatranscriptome analysis - ordination plots
+
+### Subset by transcripts that have a shared identity across all MAGs
+This is based on the shared in all MAGs intersection plot!
+
+```{r Reformat data frame for PCA input}
+# metaT_metadata <- read.delim("../data/SampleList_2020_metaT.txt")
+metaT_reformat <- metaT_metadata %>% 
+  separate_rows(ERR_list, sep = ", ") %>% 
+  separate(Sub_region, c("REGION", "subregion"), sep = "-", remove = FALSE) %>%
+  separate(Depth_sizefrac, c("DEPTH", "min", "max"), sep = "-", remove = FALSE) %>% 
+  unite(SIZEFRAC, min, max, sep = "-") %>% 
+  select(-Assembly_group, -ERR_count, run_accession = "ERR_list", REGION, DEPTH, SIZEFRAC) %>% 
+  distinct()
+# head(metaT_reformat)
+```
+
+PCA input function
+```{r PCA function}
+# Make pca-input dataframe (function)
+# Required dataframes:
+# head(metaT_reformat)
+# head(trophy_refine)
+
+pca_make_df <- function(df, kegg_df){
+  k_id_list <- as.character(unique(kegg_df$KO))
+  # k_id_list <- as.character(unique(photo_excl$KO))
+  pca_in <- df %>%
+    # pca_in <- metaT_mapped_trophy %>% 
+    filter(KO %in% k_id_list) %>% 
+    pivot_longer(cols = starts_with("ERR"), names_to = "run_accession", values_to = "transcript_tpm") %>% 
+    # Subset by small size fraction and surface community
+    left_join(metaT_reformat) %>% 
+    filter(SIZEFRAC == "0.8-5.00") %>%
+    filter(DEPTH == "SRF") %>%
+    group_by(MAG, KO, REGION, DEPTH, SIZEFRAC, run_accession) %>% 
+    summarise(TPM = sum(transcript_tpm)) %>% 
+    ungroup() %>% 
+    unite("HIT", MAG, run_accession, sep = "-") %>% 
+    select(HIT, KO, TPM) %>% 
+    pivot_wider(names_from = KO, values_from = TPM) %>%
+    column_to_rownames(var = "HIT") %>% 
+    data.frame
+  # est pca & view bar plot representation of variance
+  lr_df <- data.frame(compositions::clr((pca_in)))
+  pca_lr_df <- prcomp(lr_df)
+  variance_pca_lr <- (pca_lr_df$sdev^2)/sum(pca_lr_df$sdev^2)
+  barplot(variance_pca_lr[1:30]) #Plot first 30 variance
+  # Extract PCA x-y space
+  pca_df <- data.frame(pca_lr_df$x, sample = rownames(pca_lr_df$x)) %>% 
+    rownames_to_column(var = "SAMPLE") %>% 
+    separate(SAMPLE, c("MAG", "run_accession"), sep = "-", remove = FALSE) %>%
+    left_join(metaT_reformat) %>%
+    left_join(trophy_refine, by = c("MAG" = "new_mag_name")) %>% 
+    data.frame
+  region_order <- c("IO","MS","NAO","NPO","SAO","SO","SPO","RS")
+  region_color <- c("#711518", "#ce536b", "#c76b4a", "#dfa837", "#93b778", "#61ac86", "#657abb", "#67765b")
+  pca_df$REGION_ORDER <- factor(pca_df$REGION, levels = region_order)
+  names(region_color) <- region_order
+  return(pca_df)
+}
+```
+
+Functions for different types of PCA plots. Visualize output PCA data
+```{r PCA plotgeneration functions}
+# 3-panel of PCA plots based on several attributes of input data
+pca_madness <- function(df){
+  plot_grid(df  %>% 
+  ggplot(aes(x = PC1, y = PC2)) +
+    geom_point(aes(fill = HeterotrophyScore, 
+                   shape = PredictedTrophicMode), 
+               size = 2, stroke = 0.3, color = "black") +
+    theme_bw() +
+    scale_fill_gradient2(low = "#B4CC3D",
+                         mid = "white",
+                         high = "#CC3D6D",
+                         midpoint = 0,
+                         breaks = c(-200,-100, -50, 0, 50, 100)) +
+    scale_shape_manual(values = c(22,23)) +
+    theme(axis.text = element_text(size = 10, color = "black")),
+  df  %>% 
+ggplot(aes(x = PC1, y = PC2)) +
+    geom_point(aes(fill = MAG), 
+               size = 2, stroke = 0.3, color = "black", shape = 21) +
+    theme_bw() +
+    # scale_fill_manual(values = c("#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928", "#525252")) +
+    theme(axis.text = element_text(size = 12, color = "black")),
+df %>% 
+  ggplot(aes(x = PC1, y = PC2, fill = REGION_ORDER, shape = PredictedTrophicMode)) +
+    geom_point(aes(fill = REGION_ORDER, shape = PredictedTrophicMode), size = 2, color = "black", stroke = 0.4) +
+    theme_bw() +
+    scale_fill_manual(values = region_color) +
+    scale_shape_manual(values = c(22,23)) +
+    theme(axis.text = element_text(size = 12, color = "black")),
+ncol = 1)
+}
+
+# Single panel to scale size of each symbol by heterotrophy score
+plot_pca <- function(df) {df %>%
+# pca_across_shared_all %>% 
+  ggplot(aes(x = PC1, y = PC2, size = HeterotrophyScore)) +
+    geom_point(aes(color = HeterotrophyScore), shape = 21, 
+    # geom_point(aes(fill = HeterotrophyScore, 
+                   # shape = PredictedTrophicMode), size = 2, 
+    stroke = 1.5, fill = NA) +
+    scale_size_continuous(range = c(0.1, 10)) +
+    theme_bw() +
+    scale_color_gradient2(low = "#B4CC3D",
+                         mid = "white",
+                         high = "#CC3D6D",
+                         midpoint = 0,
+                         breaks = c(-200,-100, -50, 0, 50, 100)) +
+    # scale_fill_manual(values = c("#B4CC3D", "#CC3D6D")) +
+    scale_shape_manual(values = c(22,23)) +
+    theme(axis.text = element_text(size = 10, color = "black"))
+  }
+```
+
+## Explore ordination based on the shared KEGGs across all MAGs
+Isolate and conduct PCA analysis with orthologs that appear in all 24 MAGs only
+```{r, fig.height=5, fig.width=6}
+pca_shared_all <- pca_make_df(metaT_mapped_trophy, shared_allmags)
+# pca_across_trophic <- pca_make_df(metaT_mapped_trophy, across_trophy)
+# pca_across_hetero_core <- pca_make_df(metaT_mapped_trophy, hetero_core)
+# pca_across_hetero_excl <- pca_make_df(metaT_mapped_trophy, hetero_excl)
+# pca_across_photo_core <- pca_make_df(metaT_mapped_trophy, photo_core)
+# pca_across_photo_excl <- pca_make_df(metaT_mapped_trophy, photo_excl)
+```
+
+Explore PCA plotting options
+```{r Explore PCA results, fig.height=15, fig.width=8}
+pca_madness(pca_shared_all)
+
+```
+
+
+
+```{r Plot PCA of all shared, fig.height=7, fig.width=9}
+# svg("pca-shared-trophymode.svg", h = 7, w = 9)
+pca_shared_all %>% 
+  ggplot(aes(x = PC1, y = PC2, size = HeterotrophyScore, fill = PredictedTrophicMode)) +
+    geom_point(aes(fill = PredictedTrophicMode), shape = 21, 
+    # geom_point(aes(fill = HeterotrophyScore, 
+                   # shape = PredictedTrophicMode), size = 2, 
+    stroke = 0.6) +
+    scale_size_binned(nice.breaks = TRUE, n.breaks = 12, range = c(0.4,8)) +
+    # scale_size_continuous(range = c(0.5, 7)) +
+    theme_bw() +
+    # scale_color_gradient2(low = "#B4CC3D",
+    #                      mid = "white",
+    #                      high = "#CC3D6D",
+    #                      midpoint = 0,
+    #                      breaks = c(-200,-100, -50, 0, 50, 100)) +
+    scale_fill_manual(values = c("#CC3D6D","#B4CC3D")) +
+    # scale_shape_manual(values = c(22,23)) +
+    theme(axis.text = element_text(size = 10, color = "black"))
+# dev.off()
+```
+
+Supplementary plot
+```{r Plot PCA of shared with MAG IDs, fig.height=8, fig.width=12}
+# pdf("../si-figures/SI-SAR-Dictyocho-PCA-byMAG.pdf", h = 8, w = 12)
+pca_shared_all %>% 
+  ggplot(aes(x = PC1, y = PC2, size = HeterotrophyScore, fill = MAG)) +
+    geom_point(aes(fill = MAG), shape = 21, 
+    # geom_point(aes(fill = HeterotrophyScore, 
+                   # shape = PredictedTrophicMode), size = 2, 
+    stroke = 0.6) +
+    scale_size_binned(nice.breaks = TRUE, n.breaks = 8, range = c(0.4,8)) +
+    # scale_size_continuous(range = c(0.5, 7)) +
+    theme_bw() +
+    # scale_color_gradient2(low = "#B4CC3D",
+    #                      mid = "white",
+    #                      high = "#CC3D6D",
+    #                      midpoint = 0,
+    #                      breaks = c(-200,-100, -50, 0, 50, 100)) +
+    # scale_fill_manual(values = c("#CC3D6D","#B4CC3D")) +
+    scale_fill_manual(values = c("#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928","#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f")) +
+    # scale_shape_manual(values = c(22,23)) +
+    theme(axis.text = element_text(size = 10, color = "black")) + guides(fill = guide_legend(ncol = 2))
+# dev.off()
+```
+
+### 3-D PCA analysis
+
+
+## Isolate genes of interest
+Subset genes that are more prominent in certain categories. While the intention is to isolate genes that may be indicative of a more phototrophic versus heterotrophic lifestyle, it is likely that there will be a gene suite that is _more_ prominent in one of those categories. BUT as a whole, analysis of all the genes will be the most appropriate avenue for determining potential trophic strategies.
+```{r Isolate mapped metaT info associated with vita-selected genes}
+subset_mapped_transcripts <- metaT_mapped_trophy %>% 
+  type.convert(as.is = TRUE) %>% 
+  pivot_longer(cols = starts_with("ERR"), names_to = "run_accession", values_to = "transcript_tpm") %>%
+  # Remove zero counts
+  filter(transcript_tpm > 0) %>% 
+  # Remove Kegg IDs with no information
+  filter(KO != "NoKID") %>%
+  # Add annotation information
+  left_join(kegg_key_dictyo %>% select(KO, Gene_identification, VITA, B, C) %>% distinct()) %>% 
+  # Remove genes with no protein ID
+  filter(!is.na(Gene_identification)) %>%
+  # Select only VITA chosen KEGG IDs
+  filter(VITA == "vita") %>% 
+  # Join with metadata
+  left_join(metaT_reformat) %>%
+  unite(col = "Annotation", KO, Gene_identification, sep = " ", remove = FALSE) %>%
+  # summarise:
+  group_by(MAG, Annotation, KO, PredictedTrophicMode, HeterotrophyScore, Gene_identification, B, C) %>% 
+    summarise(SUM = sum(transcript_tpm)) %>% 
+  data.frame
+# head(subset_mapped_transcripts)
+# 554 different annotations
+
+# option to save dataframe
+# save(subset_mapped_transcripts, photo_excl, photo_core, hetero_excl, hetero_core, shared_allmags, across_trophy, file = "../data/MAG-casestudy-Stramenopile-mappedmetaT-categories.RData")
+```
+
+Of those subset genes, how many belong to the various categories?
+```{r Function to isolate list of genes by category}
+generate_list_keggs <- function(df, query){
+  query_list <- as.character(unique(query$KO))
+  df_out <- df %>% 
+    filter(KO %in% query_list)
+  print(length(unique(df_out$Annotation)))
+  return(df_out)
+}
+photo_E <- generate_list_keggs(subset_mapped_transcripts, photo_excl) #123
+photo_C <- generate_list_keggs(subset_mapped_transcripts, photo_core) #29
+het_E <- generate_list_keggs(subset_mapped_transcripts, hetero_excl) #90
+het_C <- generate_list_keggs(subset_mapped_transcripts, hetero_core) #27
+shared_ALL <- generate_list_keggs(subset_mapped_transcripts, shared_allmags) #9
+across_TROPHY <- generate_list_keggs(subset_mapped_transcripts, across_trophy) #341
+```
+
+Plot comparisons
+```{r, fig.height=30, fig.width=15}
+# head(photo_E)
+# Factor MAG list so it is in order of heterotrophy score
+
+plot_bymag <- function(df, occur){
+# Make tmp dataframe and factor MAG x-axis by heterotrophy score
+mag_list_tmp <- df %>% 
+  select(MAG, HeterotrophyScore) %>% distinct()
+mag_ordered <- (mag_list_tmp$MAG)[order(mag_list_tmp$HeterotrophyScore)]
+
+# make a new df with occurence information
+df_revised <- df %>% 
+  # Group by annotation and MAG, remove rows if there is an NA and it is duplicated
+  group_by(Annotation, MAG) %>% 
+  filter_at(vars(Annotation), any_vars(!duplicated(.)|is.na(.))) %>% 
+  ungroup() %>% 
+  group_by(Annotation) %>% 
+  mutate(OCCUR = n_distinct(MAG)) %>% 
+  filter(OCCUR >= occur)
+# make tmp dataframe and factor annotation y-axis by occurence
+annot_list_tmp <- df_revised %>% 
+  select(Annotation, OCCUR) %>% distinct()
+annot_order <- (annot_list_tmp$Annotation)[order(annot_list_tmp$OCCUR)]
+
+# Factor revised dataframe
+df_revised$MAG_order <- factor(df_revised$MAG, levels = rev(mag_ordered))
+df_revised$ANNOT_order <- factor(df_revised$Annotation, levels = rev(annot_order))
+
+ggplot(df_revised, aes(x = MAG_order, y = ANNOT_order, size = log(SUM), fill = HeterotrophyScore)) +
+  geom_point(shape = 21, aes(fill=HeterotrophyScore)) +
+  scale_fill_gradient2(low = "#B4CC3D",
+                       mid = "white",
+                       high = "#CC3D6D",
+                       midpoint = 0,
+                       breaks = c(-200,-100, -50, 0, 50, 100)) +
+  scale_size_continuous(range = c(0,7)) +
+  theme_half_open() +
+  facet_grid(C~PredictedTrophicMode, space = "free", scales = "free") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10),
+        strip.background = element_blank(),
+        strip.text.y = element_text(angle = 0, size = 7, hjust = 0, vjust = 0.5),
+        plot.title = element_text(size = 8)) +
+  labs(title = "Transcripts expressed by MAG\nSelected KEGGs = vita-selected & MAG distribution")
+}
+```
+
+```{r, fig.height=16, fig.width=12}
+# svg("photo_excl_bubble.svg", w = 12, h = 16)
+plot_bymag(photo_E, 6)
+# dev.off()
+```
+
+```{r, fig.height=10, fig.width=14}
+# svg("photo_core_bubble.svg", w = 14, h = 10)
+plot_bymag(photo_C, 6)
+# dev.off()
+```
+```{r, fig.height=8, fig.width=15}
+# svg("het_core_bubble.svg", w = 15, h = 8)
+plot_bymag(het_C, 6)
+# dev.off()
+```
+
+```{r, fig.height=15, fig.width=13}
+# svg("het_excl_bubble.svg", w = 13, h = 15)
+plot_bymag(het_E, 6)
+# dev.off()
+```
+
+```{r, fig.height=35, fig.width=18}
+# svg("across_bubble.svg", w = 18, h = 40)
+plot_bymag(across_TROPHY, 11)
+# dev.off()
+```
+
+```{r, fig.height=6, fig.width=14}
+# svg("shared-ALL_bubble.svg", w = 14, h = 6)
+plot_bymag(shared_ALL, 5)
+# dev.off()
+```
+
+## Subset vita-selected genes - heatmap by sample
+
+An untargetted approach up to this point has distilled down the list of genes. Continue exploring differences in the metatranscriptome expression profile across MAGs.
+
+Option to load from previous data.
+```{r Option to load from previous Rdata}
+# load("../data/MAG-casestudy-Stramenopile-mappedmetaT-categories.RData", verbose = TRUE)
+```
+
+Select the vita-associated IDs.
+```{r Subset vita-selected IDs}
+head(subset_mapped_transcripts)
+# length(unique(subset_mapped_transcripts$Annotation))
+vita_only <- subset_mapped_transcripts %>% 
+  select(MAG, KO, SUM) %>% distinct() %>% 
+  pivot_wider(id_cols = MAG, names_from = KO,
+              values_from = SUM, values_fill = 0) %>% 
+  column_to_rownames(var = "MAG")
+```
+
+```{r Extrac annotation for pheatmap}
+# Annotation
+annot_mag <- subset_mapped_transcripts %>% 
+  select(MAG, PredictedTrophicMode) %>% distinct() %>% 
+  column_to_rownames(var = "MAG")
+
+rownames(annot_mag) <- rownames(vita_only)
+unique(annot_mag$PredictedTrophicMode)
+
+annot_color = list(PredictedTrophicMode = c(Phototroph = "#B4CC3D", Heterotroph = "#CC3D6D"))
+```
+
+```{r pheatmap with all vita-selected, fig.height=6, fig.width=16}
+pheatmap(vita_only, 
+         annotation_row = annot_mag,
+         annotation_colors = annot_color,
+         annotation_names_row = FALSE,
+         scale = "column",
+         cluster_cols = TRUE,
+         cluster_rows = TRUE,
+         clustering_distance_rows = "correlation",
+         show_colnames = FALSE)
+# ?pheatmap()
+```
+
+
+
+## Isolate specific gene sets
+Option to load from previous data.
+```{r Repeat load of data}
+# load("../data/MAG-casestudy-Stramenopile-mappedmetaT-categories.RData", verbose = TRUE)
+# subset_mapped_transcripts == vita selected only kegg IDs
+```
+
+Filter by occurrence and size.
+```{r Filter by occurrence and size of metaT mapped}
+# head(photo_C); head(het_C)
+photo_c_list <- as.character(unique(photo_core$KO));length(photo_c_list)
+het_c_list <- as.character(unique(hetero_core$KO));length(het_c_list)
+shared <- as.character(unique(shared_allmags$KO));length(shared)
+
+# head(subset_mapped_transcripts)
+
+subset_vita_target <- subset_mapped_transcripts %>% 
+  select(MAG, Annotation, KO, PredictedTrophicMode, HeterotrophyScore, SUM) %>% 
+  filter(KO %in% photo_c_list | KO %in% het_c_list | KO %in% shared) %>% 
+  # Group by annotation and MAG, remove rows if there is an NA and it is duplicated
+  group_by(Annotation, MAG) %>% 
+  filter_at(vars(Annotation), any_vars(!duplicated(.)|is.na(.))) %>% 
+  ungroup() %>% 
+  group_by(Annotation) %>% 
+  mutate(OCCUR = n_distinct(MAG)) %>% 
+  filter(OCCUR >= 11 & OCCUR < 22) # between 50-75%
+
+length(unique(subset_vita_target$KO))
+# View(subset_vita_target)
+
+# Target gene set:
+kegg_set <- as.character(unique(subset_vita_target$KO))
+```
+
+
+Pheatmap with target gene set:
+```{r set up data frame for pheatmap with subset of genes}
+# length(unique(subset_mapped_transcripts$Annotation))
+targetgene_26_byMAG <- subset_mapped_transcripts %>% 
+  filter(KO %in% kegg_set) %>% 
+  select(MAG, Annotation, SUM) %>% distinct() %>% 
+  pivot_wider(id_cols = MAG, names_from = Annotation,
+              values_from = SUM, values_fill = 0) %>% 
+  column_to_rownames(var = "MAG")
+# dim(targetgene_26_byMAG)
+```
+
+```{r Extract annotation information by trophic mode}
+# Annotation
+annot_mag <- subset_mapped_transcripts %>% 
+  select(MAG, PredictedTrophicMode) %>% distinct() %>% 
+  column_to_rownames(var = "MAG")
+
+rownames(annot_mag) <- rownames(vita_only)
+unique(annot_mag$PredictedTrophicMode)
+
+annot_color = list(PredictedTrophicMode = c(Phototroph = "#B4CC3D", Heterotroph = "#CC3D6D"))
+```
+
+```{r Pheatmap by trophic mode and vita-selected genes, fig.height=15, fig.width=16}
+# svg("heatmap-26-KOs.svg", h = 15, w = 16)
+pheatmap(targetgene_26_byMAG, 
+         annotation_row = annot_mag,
+         annotation_colors = annot_color,
+         annotation_names_row = FALSE,
+         scale = "column",
+         cluster_cols = TRUE,
+         cluster_rows = TRUE,
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         show_colnames = TRUE)
+# dev.off()
+# ?pheatmap()
+```
+
+Generate p/a table
+```{r Table for subset of genes}
+p_a_table <- subset_mapped_transcripts %>% 
+  filter(KO %in% kegg_set) %>% 
+  select(MAG, KO, SUM) %>% distinct() %>% 
+  mutate(bin = case_when(
+    SUM > 0 ~ 1,
+    SUM == 0 ~ -1
+  )) %>% 
+  pivot_wider(id_cols = MAG, names_from = KO,
+              values_from = bin, values_fill = -1)
+# dim(p_a_table)
+# write_delim(p_a_table, path = "subset-keggIDs-stramenopileMAGs-27-04-2021.txt", delim = "\t")
+
+gene_set_list <- subset_mapped_transcripts %>% 
+  filter(KO %in% kegg_set) %>% select(Annotation, KO) %>% distinct()
+
+# View(gene_set_list)
+```
+
+## Exploration of visuals to look at expression of this gene set
+t-SNE?
+```{r Starting data types}
+# head(metaT_mapped_trophy)
+vita_keggs_list <- as.character(unique(kegg_vita$Selected.KOs))
+# length(unique(metaT_mapped_trophy$MAG))
+
+# Prepare metaT data for t-SNE input (of the 24 MAGs)
+all_data_24 <- metaT_mapped_trophy %>% 
+  # Select vita KEGG ids only
+  filter(KO %in% vita_keggs_list) %>% 
+  pivot_longer(cols = starts_with("ERR"), names_to = "run_accession", values_to = "tpm") %>%
+  left_join(metaT_reformat)
+
+dim(all_data_24)
+unique(all_data_24$HeterotrophyScore)
+# Prepare numeric data
+# SAMPLES == MAG + ERR
+numeric_data_SRF <- all_data_24 %>%
+  filter(DEPTH == "SRF") %>% 
+  unite(SAMPLE, c("MAG", "run_accession"), sep = "-") %>%
+  select(SAMPLE, KO, tpm) %>% distinct() %>%
+  group_by(SAMPLE, KO) %>%
+    summarise(sum_tpm = sum(tpm)) %>%
+  pivot_wider(id_cols = SAMPLE, names_from = KO,
+              values_from = sum_tpm, values_fill = 0) %>%
+  column_to_rownames(var = "SAMPLE")
+dim(numeric_data_SRF)
+# 
+depths <- c("SRF", "DCM")
+meta_data_SRF <- all_data_24 %>%
+  filter(DEPTH %in% depths) %>% 
+  unite(SAMPLE, c("MAG", "run_accession"), sep = "-") %>%
+  select(SAMPLE, REGION, DEPTH, SIZEFRAC, PredictedTrophicMode, HeterotrophyScore) %>% distinct() %>% 
+  column_to_rownames(var = "SAMPLE")
+# head(meta_data_SRF)
+```
+
+```{r}
+# install.packages("Rtsne")
+library(Rtsne)
+```
+
+```{r}
+## Load dataset
+# IR <- iris # Loading the iris dataset into a object called IR
+# 
+# ## Split IR into two objects: 1) containing measurements 2) containing species type
+# IR_data <- IR[ ,1:4] # We are sub-setting IR object such as to include 'all rows' and columns 1 to 4.
+# IR_species <- IR[ ,5] # We are sub-setting IR object such as to include 'all rows' and column 5.
+```
+
+```{r}
+# tsne_results <- Rtsne(IR_data, perplexity=30, check_duplicates = FALSE) # You can change the value of perplexity and see how the plot changes
+```
+
+
+```{r}
+# tsne_srf_10 <- Rtsne(numeric_data_SRF, perplexity=10, check_duplicates = FALSE)
+# tsne_srf_50 <- Rtsne(numeric_data_SRF, perplexity=50, check_duplicates = FALSE)
+tsne_srf_100 <- Rtsne(numeric_data_SRF, perplexity=100, check_duplicates = FALSE)
+```
+
+```{r, fig.height=10, fig.width=10}
+par(mfrow=c(2,2))
+# plot(tsne_srf$Y, col = "blue", pch = 19, cex = 0.5)
+# xy <- as.data.frame(tsne_srf$Y)
+# head(xy)
+plot(tsne_srf_100$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$SIZEFRAC), col = "black")
+plot(tsne_srf_50$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$SIZEFRAC), col = "black")
+plot(tsne_srf_100$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$PredictedTrophicMode), col = "black")
+plot(tsne_srf_50$Y, pch = 21, cex = 1, bg= as.factor(meta_data_SRF$PredictedTrophicMode), col = "black")
+# plot(tsne_results$Y, col = "black", bg= IR_species, pch = 21, cex = 1.5) # Second plot: Color the plot by the real species type (bg= IR_species)
+
+# ggplot(xy, aes(x = V1, V2))
+```
+```{r}
+# Extract TSNE information
+tsne_df_toplot <- data.frame(x = tsne_srf$Y[,1], y = tsne_srf$Y[,2], meta_data_SRF) %>% 
+  rownames_to_column(var = "SAMPLE") %>% 
+  separate(SAMPLE, c("MAG", "ERR"), sep = "-", remove = FALSE)
+
+head(tsne_df_toplot)
+
+tsne_plot_fxn <- function(tsne_df, fill_var){
+  ggplot(tsne_df, aes(x = x, y = y, fill = fill_var)) + 
+    geom_point(shape = 21, aes(fill = fill_var)) +
+    theme_linedraw()
+}
+```
+
+```{r, fig.height=10, fig.width=10}
+# tsne_plot_fxn(tsne_df_toplot, REGION)
+ggplot(tsne_df_toplot, aes(x = x, y = y, fill = REGION)) + 
+    geom_point(shape = 21, aes(fill = REGION)) +
+    theme_linedraw()
+```
+
+
+```{r}
+## Generate the t_SNE plot
+par(mfrow=c(1,2)) # To plot two images side-by-side
+plot(tsne_results$Y, col = "blue", pch = 19, cex = 1.5) # Plotting the first image
+plot(tsne_results$Y, col = "black", bg= IR_species, pch = 21, cex = 1.5) # Second plot: Color the plot by the real species type (bg= IR_species)
+```
+
+```{r}
+?Rtsne
+```
+
+```{r}
+head(metaT_mapped_trophy)
+tmp_df <- metaT_mapped_trophy %>% 
+  
+```
+
+
+
+```{r}
+# numeric_data <- subset_mapped_transcripts %>% 
+#   select(MAG, Annotation, KO, PredictedTrophicMode, HeterotrophyScore, SUM) %>% 
+#   # Group by annotation and MAG, remove rows if there is an NA and it is duplicated
+#   group_by(Annotation, MAG) %>% 
+#   filter_at(vars(Annotation), any_vars(!duplicated(.)|is.na(.))) %>%
+#   select(MAG, Annotation, SUM) %>% distinct() %>% 
+#   pivot_wider(id_cols = MAG, names_from = Annotation,
+#               values_from = SUM, values_fill = 0) %>% 
+#   column_to_rownames(var = "MAG")
+# # head(numeric_data)
+# 
+# head(subset_mapped_transcripts)
+# subset_mapped_transcripts %>% 
+#   select(MAG, PredictedTrophicMode, HeterotrophyScore)
+# Numeric data: rows are samples, and columns are genes
+# metadata, rownames are the same as samples
+```
+

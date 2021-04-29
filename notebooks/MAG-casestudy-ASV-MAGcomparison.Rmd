@@ -1,0 +1,411 @@
+---
+title: "ASV-MAG comparison"
+author: "Sarah Hu"
+date: "4/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Comparison with ASVs (V9 18S rRNA gene)
+
+### Description of data origin
+*Amplicon Sequence Variants (ASVs)*
+ASV taxonomy table from Benjamin Callahan. (2017). ASV Tables inferred by DADA2 from the TARA Oceans v9 metabarcoding dataset [Data set]. Zenodo. http://doi.org/10.5281/zenodo.581694. ASVs originate from de Vargas, C., Audic, S., Henry, N., Decelle, J., Mahé, F., Logares, R., … Karsenti, E. (2015, May 22). First Tara Oceans V9 rDNA metabarcoding dataset. Zenodo. http://doi.org/10.5281/zenodo.15600, where the V9 hypervariable region was amplified and sequenced. Tara Ocean ASVs total to 107,868 total and cover 299 samples.
+
+*_Dictyochophyceae_ MAGs and relative abundances*
+Metagenomic and metatranscriptomic reads were mapped against the microbial eukaryotic MAGs determined from the Tara Ocean dataset. Mapped reads were used to estimate relative abundances, where the total number of reads was used to calculate RPKM. TPM was also calculated, which involved normalizing the RPKM to the sum of all RPKMs in a given sample. 
+
+
+** Input MAGs are from ** ```/vortexfs1/omics/alexander/halexander/2020-tara-mag-abund/MAG_rpkm.csv``` and from the 50% cutoff high quality euk MAGs. MAG relative abundance input data frame lists of the name of the MAG (n=3554 total line), then the run accession that it was found in, the relative abundance, and the taxonomic identity. The relative abundance adds up to 100 for each ERR. ERRs covered total to 298 samples.
+
+# Assign taxonomy to V9 ASVs
+Clarify links to data origin here.
+```{r}
+# library(dada2)
+# Import data from Callahan et al.
+# tara <- readRDS("st.consensus.rds")
+
+# Assign taxonomy
+# tara_tax <- assignTaxonomy(tara, "/vortexfs1/omics/huber/shu/db/pr2-db/pr2_version_4.12.0_18S_dada2.fasta.gz", taxLevels = c("Kingdom","Supergroup","Division","Class","Order","Family","Genus","Species"), multithread = TRUE)
+## taxonmoy with the PR2 (v4.12) database done separately
+
+# Saved output as R data object "tara-taxassign-30-06-2020.RData"
+#
+# Import results from taxonomy assignment
+# load("tara-taxassign-30-06-2020.RData", verbose = T)
+# tara_df <- as.data.frame(t(tara)) # format the count table
+# head(tara_tax_df[1:2,]) #taxonomy assignment
+```
+
+```{r}
+# Compile & save text file with annoated data
+# tara_df_annot <- tara_df %>% 
+#     rownames_to_column(var = "seq") %>% 
+#     pivot_longer(cols = starts_with("ERR")) %>%  
+#     left_join((tara_tax_df  %>% rownames_to_column(var = "seq"))) %>% 
+# #     left_join(meta, by = c("name" = "INSDC.run.accession.number.s.")) %>% 
+#     select(-seq) %>% 
+#     data.frame
+# head(tara_df_annot[1:2,])
+# dim(tara_df_annot)
+```
+
+Import metadata for ASVs
+```{r}
+# meta <- read.csv("metabar.csv"); meta$X <- NULL
+# metaASV_2 <- meta %>% 
+#     select(Sample.material = Sample.label..TARA_station._environmental.feature_size.fraction.,
+#           Sample..Sequence.Identifier, run_accession = INSDC.run.accession.number.s.,
+#           Station = Station.identifier..TARA_station.., 
+#           Latitude = Latitude..degrees.North., Longitude = Longitude..degrees.East.,
+#           Depth = Sampling.depth..m., Environmental.Feature, 
+#           SizeFrac_low = Size.fraction.lower.threshold..micrometre., 
+#            SizeFrac_upper = Size.fraction.upper.threshold..micrometre.,
+#           MP.biom = Marine.pelagic.biomes..Longhurst.2007.,
+#            OS.region = Ocean.and.sea.regions..IHO.General.Sea.Areas.1953...MRGID.registered.at.www.marineregions.com., 
+#            BG.provine = Marine.pelagic.biomes...Longhurst.2007...MRGID.registered.at.www.marineregions.com.) %>% 
+#     add_column(study_accession = "PRJEB6610") %>% 
+#     data.frame
+# colnames(metaASV_2) <- paste0("ASV_", colnames(metaASV_2))
+# # head(metaASV_2[1:2,])
+# 
+# metaASV_3 <- metaASV_2 %>% 
+#     select(SizeFrac_low = ASV_SizeFrac_low,
+#           SizeFrac_upper = ASV_SizeFrac_upper,
+#           Lat = ASV_Latitude,
+#           Long = ASV_Longitude, 
+#            everything()) %>% 
+#     data.frame
+```
+
+
+# Compare relative abundance of 18S ASVs and MAGs
+
+MAG-based refinement tools may not fully capture the taxonomic assignment for a given microbial eukaryotic species. Here, we compare the relative abundances of ASVs and MAGs, for every sample in which they both appear, in order to supplement the ecological and biological findings for a given MAG. This may serve to benchmark the biogeography for a given taxonomic lineage or additional taxonomic resolution (i.e., assignment to the species level).
+
+
+## Import key data frames
+```{r Import ASV files}
+asv_relab <- read.delim("input-data/asv-relative-abun-tara.txt")
+
+# Modify sequence IDs
+## Save for downstream analysis
+asv_seqIDs <- asv_relab %>% 
+  select(seq) %>% 
+  distinct() %>% 
+  rowid_to_column("seq_num") %>% 
+  mutate(seq_id = paste("ASV-", seq_num, sep = ""))
+# head(asv_seqIDs)
+# length(unique(asv_seqIDs$seq_num))
+# length(unique(asv_seqIDs$seq_id))
+```
+
+
+Compile MAGs of interest and subset to include distribution and taxonomy information. Calculate relative abundance of MAGs for each Tara ocean sample.
+```{r Calc relative abundance}
+# head(mag_counts_updated[1:2,])
+# head(mag_rename_key)
+mags_relab <- mag_taxonomy %>% 
+  # Join with count data, only keep those with taxonomy names
+  inner_join(mag_counts_updated, by = c("mag" = "Genome")) %>% 
+  left_join(mag_rename_key, by = c("mag" = "old_mag_name")) %>% 
+  pivot_longer(cols = starts_with("ERR"), names_to = "run_accession", values_to = "tpm") %>% 
+  group_by(run_accession) %>% 
+  # Calculate relative abundance
+  mutate(relabun = ((tpm / sum(tpm))*100)) %>% 
+  # Join with sampleID information (used to match with ASVs)
+  left_join(metaG_reformat) %>%
+  unite(fullname, supergroup, division, class, order, family, genus, species, sep = ";", remove = FALSE) %>% 
+  mutate(fullname = gsub(";-", "", fullname)) %>% 
+  select(old_mag_name = mag, mag = new_mag_name, everything()) %>% 
+  data.frame
+
+# 994 total MAGs (Feb 2, 2021)
+# length(unique(mags_relab$mag))
+# length(unique(mags_relab$new_mag_name))
+head(mags_relab)
+# Check relative abundance
+# tmp <- filter(mags_relab, run_accession == "ERR1700891")
+# sum(tmp$relab) # Sum to 100
+```
+
+For each sample (or ERRxxx), the relative abundances of ASVs or MAGs totals to 100%.
+
+### Survey MAG and ASV tables
+Report summary of the total MAGs and ASVs to compare.
+```{r Report summary of input data}
+# Total MAGs and ASVs
+writeLines(paste("there are", length(unique(mags_relab$mag)), "total MAGs, which cover", length(unique(mags_relab$sampleid)), "samples."))
+writeLines(paste("there are", length(unique(asv_relab$seq)), "total ASVs, which cover",length(unique(asv_relab$sampleid)), "samples."))
+
+# Overlap
+writeLines(paste(dim(mags_relab %>% 
+    select(sampleid) %>% 
+    distinct()  %>% 
+    inner_join(select(asv_relab, sampleid)) %>% 
+    filter(!is.na(sampleid)) %>% 
+    distinct())[1], "samples overlap betwen MAG- and ASV-derived data"))
+```
+
+## Plot both ASV and MAG taxonomic composition
+Remove NAs ahead of time.
+```{r Output table of ASV and MAG taxa, fig.height=7, fig.width=10}
+# Summary of upper (Taxonomic) level IDs
+summary_mag <- mags_relab %>% select(supergroup, division, class, mag) %>% 
+    group_by(class) %>% mutate(totalMAGs = n(), totaluniqMAGs = n_distinct(mag)) %>% 
+    select(-mag) %>% distinct() %>% arrange(supergroup, division) 
+# summary_mag
+# unique(summary_mag$supergroup)
+# colnames(summary_mag)
+
+ggplot(summary_mag %>% filter(!(class == "-")), aes(x = division, y = totalMAGs, fill = class)) +
+  geom_bar(stat = "identity", color = "black") +
+  facet_grid(supergroup ~ ., space = "free", scale = "free") +
+  theme_linedraw() +
+  coord_flip() +
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_text(angle = 0),
+        strip.background = element_blank(),
+        legend.position = "bottom") +
+  labs(x = "", y = "Total MAGs", title = "MAGs by class")
+```
+
+```{r Summary of taxa in ASV data, fig.width=8, fig.height=7}
+# head(asv_relab)
+summary_asv <- asv_relab %>% select(supergroup, division, class, seq) %>% 
+    group_by(class) %>% mutate(totalASVs = n(), totaluniqASVs = n_distinct(seq)) %>% 
+    select(-seq) %>% distinct() %>% arrange(supergroup, division)
+# head(summary_asv)
+
+ggplot(summary_asv %>% filter(!is.na(division)), aes(x = supergroup, y = totalASVs, fill = division)) +
+  geom_bar(stat = "identity", color = "black") +
+  facet_grid(supergroup ~ ., space = "free", scale = "free") +
+  theme_linedraw() +
+  coord_flip() +
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_text(angle = 0),
+        strip.background = element_blank(),
+        legend.position = "bottom") +
+  labs(x = "", y = "Total ASVs", title = "ASVs by class")
+```
+
+Below function will map all ASVs to MAGs based on taxonomic name. Function will retain only samples that appear in both ASV and MAG data. Mapping relies on matching the sample ID (Tara station #, size fraction, depth) and taxonomic grouping. Then will subset so that the number of ASV-MAG occurrences is > freq. Then, function performs linear regression, keeps positive slopes, and subsets the highest r.squared value for a MAG-ASV match. This is all written to output filename.
+
+
+> Plan to look into the Dictyochophyceae (class level Silicoflagellates within the Ochrophyta).
+
+## Series of functions to compare MAGs and ASVs
+
+```check_mag()``` function serves to compare how many taxonomic levels between the ASV and MAG results match over a number of samples. User defined the taxonomic "level" (e.g., class or order) and output reports the number of MAGs and ASVs that match.
+
+```{r Function to check MAG and ASV levels}
+# Check MAG data for taxa of interest
+check_mag <- function(mag_df, asv_df, level){
+    level <- enquo(level)
+    mag_out <- mag_df %>% 
+        unite(TAXA, supergroup:!!level, remove = TRUE, sep =";")
+    asv_out <- asv_df %>% 
+        unite(TAXA, supergroup:!!level, remove = TRUE, sep =";")
+    writeLines(paste(length(unique(mag_out$TAXA)), "unique in MAG data"))
+    writeLines(paste(length(unique(asv_out$TAXA)), "unique in ASV data"))
+    unique(mag_out$TAXA)
+}
+
+# check_mag(mag_relab, asv_relab, class)
+```
+Check how many matches there are between MAG and ASV data at the class level
+```{r Check how many matches there are between MAG and ASV data}
+# Output lists matches to the CLASS level.
+## There are 16 unique tax IDs to the class level from the MAGs and 191 unique class level designations in the ASV data
+check_mag(mags_relab, asv_relab, class)
+
+# head(asv_relab)
+# At the order level, there are 18 unique tax desigations to the order level in the MAG data and over 380 in the ASV data
+# check_mag(mag_relab, asv_relab, order)
+```
+
+Note the group: _"Stramenopiles;Ochrophyta;Dictyochophyceae;Dictyochophyceae_X"_, that ends with *_X*. This indicates that there is not any more meaningful information beyond Dictyochophyceae. Plan to explore this further.
+
+# ASV-MAG comparison: Dictyochophytes
+
+We've now compared the MAG and ASV taxonomic assignments to the class level to see how many overlap. Here, we will pull out those ASVs that are identified as Dictyochophytes and have similar relative abundance patterns to the MAGs across Tara Ocean samples.
+
+```{r Query dictyochophyte MAG and ASV}
+# check_mag(mags_relab, asv_relab, class)
+colnames(mags_relab)
+colnames(asv_relab)
+```
+
+Subsetting at the class level for dictyochophytes and matching MAGs and ASVs seems most appropriate.
+
+```{r Function to map ASV and MAG data}
+map_ASVtoMAG_bylevel <- function(mag_df, asv_df, subset_level, subset_taxa, map_level, freq){
+    subset_level <- enquo(subset_level)
+    map_level <- enquo(map_level)
+    mag_df %>% 
+    filter(!!subset_level == subset_taxa) %>% 
+    # Classify to genus level
+    unite(TAXA, supergroup:!!map_level, remove = FALSE, sep =";") %>% 
+    # Classify ASVs to genus level and merge by genus and sample ID
+    left_join(unite(asv_df, TAXA, supergroup:!!map_level, remove = FALSE, sep =";"), 
+              by = c("TAXA"="TAXA", "sampleid" = "sampleid"), suffix = c(".MAG", ".ASV")) %>%
+    filter(!is.na(run_accession.ASV) & !is.na(sampleid)) %>% # Remove samples without an ASV    
+    group_by(mag, seq) %>% # Selects correct grouping
+    mutate(OCCUR = n_distinct(sampleid)) %>% # Count occurrences and ratio of relative abundances
+    filter(OCCUR >= freq) %>% #ASV-MAG incidence must occur more than predetermined # of times
+    data.frame
+    }
+```
+
+Below function subsets the ASV and MAG dataframe to select only entries that match to the class level and include "Dictyochophyceae". After matching ASVs and MAGs, only keep those MAG-ASV matches where there are at least 5 samples that include both ASV and MAGs. Increasing this last number may improve statistical power of the MAG and ASV match.
+
+Matching the MAGs to the ASVs that all fell within the Ochrophyta category (division level). For a MAG and ASV, if both division level assignments were ochrophyta and the ASV and MAG appeared in the same 20 samples, they matched. 
+
+Since few of the dictyochophyte
+
+
+```{r Function to select and map dictyochophytes}
+# dictyo_class <- map_ASVtoMAG_bylevel(mag_relab, asv_relab, class, "Dictyochophyceae", class, 0)
+ochro_div <- map_ASVtoMAG_bylevel(mags_relab, asv_relab, division, "Ochrophyta", division, 20)
+```
+
+
+Over 30,000 pairs of MAG-ASV matched. Meaning, there were over 30,000 instances of a MAG and ASV that had at least the Ochrophyta division level assignment and appeared in the same sample. 
+```{r Report output from Ochrophyte mapping}
+colnames(ochro_div)
+dim(select(ochro_div, mag, seq) %>% distinct())
+```
+
+
+## Subset to Dictyochophyceae
+
+> Ecological inquiry into how we can augment taxonomy assignment for MAGs.
+
+**Can we expand the number of MAGs that represent Dictyochophytes?**
+
+First, find those dictyochophyte ASV-MAG pairs 
+Subset by Dictyochophyte assignment - where either the ASV or MAG had a dictyochophyte assignment.
+```{r Select dictyochyphytes}
+ochro_sub_dictyo <- ochro_div %>% 
+  mutate(dictyo_mag = ifelse(class.MAG == "Dictyochophyceae", "true", "false"),
+         dictyo_asv = ifelse(class.ASV == "Dictyochophyceae", "true", "false")) %>% 
+  unite(category, dictyo_mag, dictyo_asv, sep = "-") %>%
+  mutate(dictyo = case_when(
+    category == "true-true" ~ "both",
+    category == "true-false" ~ "MAG",
+    category == "false-true" ~ "ASV",
+    TRUE ~ "none"
+  )) %>%
+  filter(!(dictyo == "none")) 
+head(ochro_sub_dictyo)
+dim(ochro_sub_dictyo)
+table(ochro_sub_dictyo$dictyo)
+# 1.2 million!
+```
+
+What is the result of this matching?
+* Total number of MAGs and ASVs included in matches
+Over 3600 unique MAG-ASV pairs
+
+Perform linear regression to see if ASV relative abundance supports MAG relative abundance. ```est_lm()`` function performs linear regression for each MAG-ASV pair. User defines the number of samples that the ASV-MAG occurrences much appear and the r squared threshold.
+```{r Estimate linear regression function}
+# Function to estimate slope and r squared of ASV and MAG pairs
+## Options to subset by frequency again and r-squared
+est_lm <- function(df, freq, r){
+    df_line <- df %>% 
+    nest(-mag, -seq) %>% 
+    mutate(lm_fit = map(data, ~ lm(relabun.MAG ~ relabun.ASV, data = .)),
+          tidied = map(lm_fit, tidy)) %>% 
+    unnest(tidied) %>% 
+    select(mag, seq, term, estimate) %>%
+    pivot_wider(names_from = term, values_from = estimate) %>% 
+    data.frame
+    # Modify column names
+    colnames(df_line) <- c("mag", "seq", "Intercept", "Slope")
+    # Re-do lm() to select rsquared value
+    df_lm <- df %>% 
+    nest(-mag, -seq) %>% 
+    mutate(lm_fit = map(data, ~ lm(relabun.MAG ~ relabun.ASV, data = .)),
+          glanced = map(lm_fit, glance)) %>% 
+    unnest(glanced) %>% 
+    select(mag, seq, r.squared) %>% 
+    # Join with other lm information
+    right_join(df_line, by = c("mag"="mag", "seq"="seq")) %>% 
+    # Join with all other metadata for mag-seq pair
+    right_join(df, by = c("mag"="mag", "seq"="seq")) %>% 
+    # Filter by positive slope, occurence, and rsquared value
+    filter(Slope > 0) %>% 
+    filter(OCCUR > freq) %>% 
+    filter(r.squared > r) %>% 
+    data.frame
+    tmp_stats <- df_lm %>% 
+    select(mag, seq, OCCUR, r.squared) %>% 
+    distinct()
+    # Report:
+    writeLines(paste(range(tmp_stats$r.squared)[1], " min of r^2 values"))
+    writeLines(paste(range(tmp_stats$r.squared)[2], " max of r^2 values"))
+    writeLines(paste(length(unique(tmp_stats$mag))," total MAGs"))
+    writeLines(paste(length(unique(tmp_stats$seq))," total ASVs"))
+    writeLines(paste(dim(tmp_stats)[1]," total comparisons that will be plot"))
+    return(df_lm)
+    }
+```
+
+Below, using the subset of putative dictyochophyte MAGs (derived from potential ASV co-occurrence), run linear regression to find best fit. Subset results so that r squared value is greater than 0.6.
+```{r Linear regression for dictyochophyceae MAG-ASV}
+dictyo_lm <- est_lm(ochro_sub_dictyo, 20, 0.6)
+```
+
+> Output from linear regression function reports the min and max of r-squared values, the total MAGs and ASVs used for comparison and the total number of pairwise comparisons that need to be represented. 
+
+
+Reformat data frame to make plots.
+```{r How do MAGs and ASV correspond?}
+# Explore and plot the comparison between MAG and ASVs for dictyochophytes
+# From 249 comparisons to be plot, subsample to more promising comparisons
+## And reformat
+# head(asv_seqIDs)
+dictyo_lm_toplot <- dictyo_lm %>% 
+  # Select minimum R squared value
+  filter(r.squared >= 0.6) %>% 
+  # import ASV sequence IDs
+  left_join(asv_seqIDs) %>% 
+  # Extract highest resolution of taxonomic name for MAGs and ASVs
+  mutate(MAG_tax = str_extract(fullname.MAG, '\\b[^;]+$'),
+         ASV_tax = str_extract(fullname.ASV, '\\b[^;]+$'),
+         MAG_ID = paste("MAG", str_extract(mag, '\\b[^-]+$'), MAG_tax, sep = "-"),
+         ASV_ID = paste(seq_id, ASV_tax, sep = "-")) %>%
+  data.frame
+head(dictyo_lm_toplot)
+```
+
+Supplementary figure that shows all ASV-MAG pairs.
+```{r Plot all pairs, fig.height=18, fig.width=22}
+# svg("figs/Supplementary-dictyochophyte-allpairs.svg", h = 18, w = 22)
+dictyo_lm_toplot %>% 
+   ggplot(aes(x = relabun.ASV, y = relabun.MAG, fill = ASV_ID)) +
+    geom_abline(intercept = 0, slope = 1, alpha = .5) +  # Line of perfect fit
+    geom_abline(aes(group = ASV_ID, slope = Slope, 
+                    intercept = Intercept, color = ASV_ID)) +
+    geom_dl(aes(label = round(r.squared, 2), color = ASV_ID),
+            method = list("smart.grid", cex = 0.8)) +
+    geom_point(aes(fill = ASV_ID), color = "black", size = 2, shape = 21) +
+    facet_wrap(mag ~.,scales = "free", labeller = label_wrap_gen(width = 15)) +
+    theme_linedraw() +
+    theme(axis.text = element_text(color = "black", face = "bold", size = 10),
+         strip.background = element_blank(),
+         strip.text = element_text(size = 11, face = "bold", color = "black",hjust = 1, vjust = -1),
+         legend.position = "right",
+          legend.title = element_blank(),
+         plot.margin = unit(c(1,3,1,1), "lines")) +
+    labs(x = "MAG relative abundance", y = "ASV relative abundance", 
+         title = "") +
+    guides(fill = guide_legend(ncol = 1), 
+          col = guide_legend(ncol = 1))
+# dev.off()
+```
+
+> Probably come back to this plot, for the main text and evaluate which one to plot as an example... likely the core MAGs chosen to look at. and perhaps those that show some trophic differences of interest. 

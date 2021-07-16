@@ -1,0 +1,202 @@
+"","eukprok","mag","Domain","Clade","Kingdom","Supergroup","Phylum","Class","Order","Family","Genus","Species","community","degree","MAG","classification"
+"1","prok","SPO-PEOD-SRF-20-180-00_bin-10","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,3,NA,NA
+"2","prok","SO-all-SRF-0-8-5-00_bin-2","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Nitrincolaceae","g__ASP10-02a","s__",2,9,NA,NA
+"3","prok","NPO-all-SRF-0-8-5-00_bin-377","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodospirillales_A","f__UBA2165","g__TMED167","s__",7,12,NA,NA
+"4","prok","SPO-SPSG-SRF-0-8-5-00_bin-342","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__UBA8366","f__UBA8366","g__UBA8366","s__UBA8366 sp002711555",7,12,NA,NA
+"5","prok","MS-all-DCM-0-8-5-00_bin-168","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__JCVI-SCAAA005","s__JCVI-SCAAA005 sp000224765",7,7,NA,NA
+"6","prok","SPO-CHIL-DCM-0-8-5-00_bin-42","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__JCVI-SCAAA005","s__JCVI-SCAAA005 sp002683655",7,15,NA,NA
+"7","prok","NAO-all-MIX-0-8-5-00_bin-178","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__JCVI-SCAAA005","s__JCVI-SCAAA005 sp000224765",7,16,NA,NA
+"8","prok","SPO-all-SRF-20-180-00_bin-209","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,4,NA,NA
+"9","prok","NPO-all-SRF-180-2000-00_bin-41","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rickettsiales","f__Anaplasmataceae","g__","s__",1,11,NA,NA
+"10","prok","SAO-all-DCM-0-8-5-00_bin-456","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__GCA-2683315","s__",7,11,NA,NA
+"11","prok","NPO-all-SRF-0-8-5-00_bin-260","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__DEV007","g__","s__",4,13,NA,NA
+"12","prok","MS-all-SRF-180-2000-00_bin-45","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Enterobacterales","f__Vibrionaceae","g__Paraphotobacterium","s__Paraphotobacterium marinum",1,20,NA,NA
+"13","prok","IO-all-MES-0-8-5-00_bin-431","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__Phycisphaeraceae","g__GCA-2686995","s__GCA-2686995 sp002686995",2,6,NA,NA
+"14","prok","SPO-SPSG-SRF-180-2000-00_bin-221","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,4,NA,NA
+"15","prok","NAO-all-MIX-0-8-5-00_bin-29","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__Arctic96AD-7","s__Arctic96AD-7 sp002704555",7,3,NA,NA
+"16","prok","SPO-PEOD-DCM-0-8-5-00_bin-138","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__JCVI-SCAAA005","s__JCVI-SCAAA005 sp000224765",7,22,NA,NA
+"17","prok","SPO-all-SRF-0-8-5-00_bin-257","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Porticoccaceae","g__TMED48","s__TMED48 sp002591625",7,8,NA,NA
+"18","prok","NPO-all-DCM-5-20-00_bin-25","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,4,NA,NA
+"19","prok","MS-all-DCM-0-8-5-00_bin-394","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__GCA-2691085","f__GCA-2691085","g__GCA-2691085","s__GCA-2691085 sp002691085",7,3,NA,NA
+"20","prok","SPO-SPSG-SRF-180-2000-00_bin-163","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__",3,5,NA,NA
+"21","prok","NAO-all-MIX-0-8-5-00_bin-285","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodospirillales_A","f__GCA-2722175","g__GCA-2722175","s__",7,3,NA,NA
+"22","prok","SPO-all-DCM-0-8-5-00_bin-596","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__UBA10066","g__GCA-2716065","s__GCA-2716065 sp002716065",7,1,NA,NA
+"23","prok","MS-all-DCM-0-8-5-00_bin-486","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Porticoccaceae","g__TMED48","s__TMED48 sp002701765",7,5,NA,NA
+"24","prok","SPO-all-SRF-20-180-00_bin-147","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__Cognatiyoonia","s__",3,2,NA,NA
+"25","prok","SPO-PEOD-SRF-5-20-00_bin-28","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,4,NA,NA
+"26","prok","NAO-all-SRF-0-8-5-00_bin-362","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__UBA8366","f__UBA8366","g__GCA-002724395","s__GCA-002724395 sp002724395",7,6,NA,NA
+"27","prok","SAO-all-SRF-20-180-00_bin-8","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__","g__","s__",1,15,NA,NA
+"28","prok","SPO-all-DCM-0-8-5-00_bin-339","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002715825",3,4,NA,NA
+"29","prok","MS-all-SRF-0-8-5-00_bin-572","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Halieaceae","g__Luminiphilus","s__",7,10,NA,NA
+"30","prok","MS-all-SRF-0-8-5-00_bin-65","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Burkholderiales","f__SG8-40","g__UBA3031","s__UBA3031 sp002167745",7,8,NA,NA
+"31","prok","NPO-all-SRF-180-2000-00_bin-31","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,3,NA,NA
+"32","prok","SPO-all-SRF-20-180-00_bin-249","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__","s__",3,1,NA,NA
+"33","prok","NPO-all-MES-0-8-5-00_bin-96","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__GCA-2729495","f__GCA-2729495","g__GCA-2729495","s__",1,7,NA,NA
+"34","prok","SPO-all-DCM-0-8-5-00_bin-247","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__TMED109","f__TMED131","g__TMED62","s__",7,4,NA,NA
+"35","prok","IO-all-MES-0-8-5-00_bin-132","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA9615","f__","g__","s__",2,7,NA,NA
+"36","prok","IO-all-DCM-0-8-5-00_bin-167","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__GCA-002705045","s__",7,5,NA,NA
+"37","prok","SPO-PEOD-SRF-0-8-5-00_bin-69","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__UBA1096","g__UBA1096","s__UBA1096 sp002453165",7,2,NA,NA
+"38","prok","MS-all-SRF-0-8-5-00_bin-450","d__Bacteria","NA","NA","NA","p__Marinisomatota","c__Marinisomatia","o__Marinisomatales","f__TCS55","g__","s__",7,7,NA,NA
+"39","prok","MS-all-SRF-0-8-5-00_bin-481","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__GCA-002684695","g__GCA-002684695","s__",7,7,NA,NA
+"40","prok","SPO-CHIL-SRF-0-8-5-00_bin-308","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Pelagibacterales","f__Pelagibacteraceae","g__Pelagibacter_A","s__",7,9,NA,NA
+"41","prok","MS-all-DCM-0-8-5-00_bin-335","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__UBA1096","g__UBA1096","s__UBA1096 sp002453165",7,4,NA,NA
+"42","prok","MS-all-SRF-0-8-5-00_bin-513","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__UBA3478","s__",7,6,NA,NA
+"43","prok","SPO-SPSG-SRF-0-8-5-00_bin-380","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__TMED109","f__TMED109","g__TMED109","s__TMED109 sp002720535",7,4,NA,NA
+"44","prok","SAO-all-DCM-0-8-5-00_bin-487","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__UBA796","s__",4,7,NA,NA
+"45","prok","MS-all-DCM-0-8-5-00_bin-669","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Acidimicrobiia","o__Microtrichales","f__UBA8592","g__MedAcidi-G2A","s__MedAcidi-G2A sp002171605",4,13,NA,NA
+"46","prok","SPO-SPSG-SRF-20-180-00_bin-138","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Chitinophagales","f__Saprospiraceae","g__","s__",1,5,NA,NA
+"47","prok","MS-all-DCM-0-8-5-00_bin-618","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__","g__","s__",4,5,NA,NA
+"48","prok","RS-all-DCM-0-8-5-00_bin-3","d__Bacteria","NA","NA","NA","p__Chloroflexota","c__Dehalococcoidia","o__UBA2979","f__UBA2979","g__UBA2979","s__UBA2979 sp002725365",7,4,NA,NA
+"49","prok","MS-all-DCM-0-8-5-00_bin-376","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MS024-2A","s__",7,5,NA,NA
+"50","prok","SPO-all-SRF-0-8-5-00_bin-917","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__HIMB11 sp002711145",7,3,NA,NA
+"51","prok","SAO-all-SRF-0-8-5-00_bin-528","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__UBA10353","f__UBA7415","g__UBA7415","s__UBA7415 sp002470515",2,2,NA,NA
+"52","prok","NAO-all-SRF-0-8-5-00_bin-763","d__Bacteria","NA","NA","NA","p__Calditrichota","c__Calditrichia","o__RBG-13-44-9","f__","g__","s__",2,6,NA,NA
+"53","prok","NAO-all-MIX-0-8-5-00_bin-209","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp003210755",4,2,NA,NA
+"54","prok","SPO-SPSG-SRF-0-8-5-00_bin-245","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__UBA854","s__UBA854 sp002591705",3,4,NA,NA
+"55","prok","SPO-PEOD-SRF-0-8-5-00_bin-102","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",3,3,NA,NA
+"56","prok","NAO-all-SRF-180-2000-00_bin-27","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Francisellales","f__Francisellaceae","g__Fangia","s__",1,11,NA,NA
+"57","prok","NPO-all-SRF-0-8-5-00_bin-608","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__UBA1100","g__UBA1100","s__",7,2,NA,NA
+"58","prok","IO-all-DCM-0-8-5-00_bin-234","d__Bacteria","NA","NA","NA","p__Chloroflexota","c__Dehalococcoidia","o__UBA1151","f__TMED-70","g__TMED-70","s__TMED-70 sp002703265",7,7,NA,NA
+"59","prok","SPO-SPSG-SRF-0-8-5-00_bin-396","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002715825",3,4,NA,NA
+"60","prok","SPO-SPSG-DCM-0-8-5-00_bin-144","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__Sagittula","s__Sagittula sp002814095",7,2,NA,NA
+"61","prok","NAO-all-MIX-0-8-5-00_bin-89","d__Bacteria","NA","NA","NA","p__Poribacteria","c__WGA-4E","o__WGA-4E","f__UBA9662","g__TMED15","s__TMED15 sp002714785",7,2,NA,NA
+"62","prok","NPO-all-SRF-180-2000-00_bin-44","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__",3,1,NA,NA
+"63","prok","NAO-all-MIX-0-8-5-00_bin-162","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__HIMB11 sp002457115",7,5,NA,NA
+"64","prok","NPO-all-DCM-0-8-5-00_bin-146","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__GCA-2691085","f__GCA-2691085","g__GCA-2691085","s__GCA-2691085 sp002691085",7,2,NA,NA
+"65","prok","SPO-all-SRF-0-8-5-00_bin-942","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Litoricolaceae","g__","s__",7,10,NA,NA
+"66","prok","NPO-all-DCM-0-8-5-00_bin-361","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__GCA-002705045","s__GCA-002705045 sp002725175",7,4,NA,NA
+"67","prok","NPO-all-SRF-0-8-5-00_bin-648","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__UBA8316","s__UBA8316 sp002711215",7,2,NA,NA
+"68","prok","MS-all-DCM-0-8-5-00_bin-601","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__","s__",4,5,NA,NA
+"69","prok","NAO-all-MIX-0-8-5-00_bin-248","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Planctomycetes","o__Pirellulales","f__Pirellulaceae","g__UBA721","s__UBA721 sp002705165",7,2,NA,NA
+"70","prok","SPO-all-SRF-180-2000-00_bin-52","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__",4,2,NA,NA
+"71","prok","NAO-all-SRF-0-8-5-00_bin-180","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__",6,2,NA,NA
+"72","prok","SPO-all-SRF-0-8-5-00_bin-701","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MED-G13","s__",3,2,NA,NA
+"73","prok","SAO-all-DCM-0-8-5-00_bin-537","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__","s__",7,3,NA,NA
+"74","prok","SO-all-SRF-180-2000-00_bin-21","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Nitrincolaceae","g__Rs1","s__",2,7,NA,NA
+"75","prok","MS-all-SRF-0-8-5-00_bin-312","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__",7,4,NA,NA
+"76","prok","MS-all-DCM-0-8-5-00_bin-34","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__",7,7,NA,NA
+"77","prok","MS-all-DCM-0-8-5-00_bin-388","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__",4,1,NA,NA
+"78","prok","SPO-all-SRF-180-2000-00_bin-250","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Enterobacterales","f__Vibrionaceae","g__Vibrio","s__Vibrio caribbeanicus",1,3,NA,NA
+"79","prok","SPO-SPSG-SRF-0-8-5-00_bin-317","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__JCVI-SCAAA005","s__JCVI-SCAAA005 sp003541985",7,5,NA,NA
+"80","prok","SPO-CHIL-SRF-0-8-5-00_bin-115","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__HIMB11 sp002682975",7,2,NA,NA
+"81","prok","IO-all-FSW-0-8-5-00_bin-121","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp002686685",7,6,NA,NA
+"82","prok","MS-all-DCM-0-8-5-00_bin-181","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__UBA8366","f__UBA8366","g__GCA-002724395","s__",7,10,NA,NA
+"83","prok","SPO-all-SRF-20-180-00_bin-98","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Xanthomonadales","f__SZUA-36","g__","s__",3,1,NA,NA
+"84","prok","NAO-all-MIX-0-8-5-00_bin-236","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",4,1,NA,NA
+"85","prok","RS-all-DCM-0-8-5-00_bin-27","d__Bacteria","NA","NA","NA","p__Poribacteria","c__WGA-4E","o__WGA-4E","f__UBA9662","g__TMED15","s__TMED15 sp002729015",7,3,NA,NA
+"86","prok","SPO-SPSG-MIX-0-8-5-00_bin-157","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__HTCC2089","g__UBA9659","s__UBA9659 sp002708765",7,1,NA,NA
+"87","prok","SAO-all-SRF-0-8-5-00_bin-232","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Spongiibacteraceae","g__Oceanicoccus","s__Oceanicoccus sp000169075",4,1,NA,NA
+"88","prok","SPO-SPSG-SRF-0-8-5-00_bin-479","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__UBA1135","o__UBA2386","f__UBA2386","g__GCA-2684655","s__GCA-2684655 sp002684655",1,1,NA,NA
+"89","prok","SPO-all-SRF-0-8-5-00_bin-599","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__GCA-2683315","s__",7,4,NA,NA
+"90","prok","NPO-all-DCM-0-8-5-00_bin-20","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__GCA-2691085","f__GCA-2691085","g__","s__",7,4,NA,NA
+"91","prok","NPO-all-DCM-0-8-5-00_bin-123","d__Bacteria","NA","NA","NA","p__SAR324","c__SAR324","o__SAR324","f__NAC60-12","g__Arctic96AD-7","s__Arctic96AD-7 sp002704555",7,1,NA,NA
+"92","prok","SAO-all-SRF-0-8-5-00_bin-499","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Pseudomonadaceae","g__Pseudomonas_D","s__",2,2,NA,NA
+"93","prok","IO-all-SRF-0-8-5-00_bin-60","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MED-G14","s__",3,1,NA,NA
+"94","prok","SPO-CHIL-DCM-0-8-5-00_bin-28","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__",7,2,NA,NA
+"95","prok","SPO-CHIL-SRF-0-8-5-00_bin-86","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Halieaceae","g__Luminiphilus","s__Luminiphilus sp002683335",7,2,NA,NA
+"96","prok","NPO-all-SRF-0-8-5-00_bin-514","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__AAA164-E04","g__UBA7971","s__",7,4,NA,NA
+"97","prok","SPO-all-SRF-0-8-5-00_bin-104","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Chitinophagales","f__Saprospiraceae","g__","s__",2,5,NA,NA
+"98","prok","MS-all-DCM-0-8-5-00_bin-444","d__Bacteria","NA","NA","NA","p__Marinisomatota","c__Marinisomatia","o__Marinisomatales","f__Marinisomataceae","g__Marinisoma","s__",7,2,NA,NA
+"99","prok","SPO-all-DCM-0-8-5-00_bin-483","d__Bacteria","NA","NA","NA","p__Gemmatimonadota_A","c__GCA-2686955","o__GCA-2686955","f__GCA-2686955","g__","s__",2,4,NA,NA
+"100","prok","SPO-PEOD-SRF-0-8-5-00_bin-20","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Cytophagales","f__Cyclobacteriaceae","g__UBA7330","s__",7,3,NA,NA
+"101","prok","SPO-all-SRF-0-8-5-00_bin-965","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Crocinitomicaceae","g__UBA952","s__",4,2,NA,NA
+"102","prok","SPO-PEOD-SRF-0-8-5-00_bin-83","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__UBA1135","o__UBA2386","f__UBA2386","g__GCA-2684655","s__GCA-2684655 sp002684655",1,1,NA,NA
+"103","prok","RS-all-SRF-0-8-5-00_bin-62","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp002695585",7,2,NA,NA
+"104","prok","SPO-SPSG-SRF-0-8-5-00_bin-126","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Crocinitomicaceae","g__UBA952","s__",3,2,NA,NA
+"105","prok","IO-all-SRF-0-8-5-00_bin-375","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp002686685",7,7,NA,NA
+"106","prok","SPO-all-SRF-0-8-5-00_bin-339","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MED-G14","s__",3,2,NA,NA
+"107","prok","MS-all-DCM-0-8-5-00_bin-42","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__UBA12014","s__UBA12014 sp002167845",4,1,NA,NA
+"108","prok","SPO-all-SRF-20-180-00_bin-223","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__","s__",3,4,NA,NA
+"109","prok","MS-all-DCM-0-8-5-00_bin-285","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__DEV007","g__EC70","s__EC70 sp002705125",4,3,NA,NA
+"110","prok","SPO-CHIL-SRF-0-8-5-00_bin-6","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Parvibaculales","f__RS24","g__Micropelagos","s__",7,1,NA,NA
+"111","prok","SPO-PEOD-SRF-5-20-00_bin-42","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Actinobacteria","o__Nanopelagicales","f__GCA-2699445","g__GCA-2699445","s__",3,1,NA,NA
+"112","prok","MS-all-SRF-0-8-5-00_bin-629","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__HTCC2089","g__UBA4421","s__",7,9,NA,NA
+"113","prok","MS-all-DCM-0-8-5-00_bin-247","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__",7,3,NA,NA
+"114","prok","MS-all-SRF-180-2000-00_bin-80","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Nitrosococcales","f__Methylophagaceae","g__","s__",2,2,NA,NA
+"115","prok","NAO-all-SRF-0-8-5-00_bin-338","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rickettsiales","f__Midichloriaceae","g__","s__",7,4,NA,NA
+"116","prok","SPO-all-SRF-5-20-00_bin-80","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Cytophagales","f__","g__","s__",1,1,NA,NA
+"117","prok","RS-all-DCM-0-8-5-00_bin-26","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__HTCC2089","g__UBA7455","s__",7,2,NA,NA
+"118","prok","SPO-SPSG-SRF-0-8-5-00_bin-304","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__",3,3,NA,NA
+"119","prok","MS-all-DCM-0-8-5-00_bin-371","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Porticoccaceae","g__HTCC2207","s__",7,6,NA,NA
+"120","prok","MS-all-SRF-0-8-5-00_bin-548","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Pelagibacterales","f__Pelagibacteraceae","g__HIMB114","s__HIMB114 sp002692055",7,1,NA,NA
+"121","prok","MS-all-DCM-20-180-00_bin-48","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Chitinophagales","f__Saprospiraceae","g__","s__",1,24,NA,NA
+"122","prok","SPO-all-SRF-0-8-5-00_bin-48","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Sphingomonadales","f__Sphingomonadaceae","g__Citromicrobium","s__",7,1,NA,NA
+"123","prok","SPO-SPSG-SRF-20-180-00_bin-189","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__DEV007","g__EC70","s__EC70 sp002684575",3,1,NA,NA
+"124","prok","SAO-all-SRF-0-8-5-00_bin-431","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp002683535",7,1,NA,NA
+"125","prok","SPO-all-SRF-5-20-00_bin-151","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__Oceanicola_B","s__",2,1,NA,NA
+"126","prok","MS-all-SRF-0-8-5-00_bin-487","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__UBA8316","s__UBA8316 sp002711215",7,2,NA,NA
+"127","prok","SPO-PEOD-DCM-0-8-5-00_bin-52","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",3,2,NA,NA
+"128","prok","SO-all-SRF-0-8-5-00_bin-77","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__Hel1-33-131","s__",7,6,NA,NA
+"129","prok","SPO-PEOD-SRF-0-8-5-00_bin-40","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002380675",3,4,NA,NA
+"130","prok","NAO-all-SRF-0-8-5-00_bin-1","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rickettsiales","f__Midichloriaceae","g__","s__",4,4,NA,NA
+"131","prok","SPO-SPSG-SRF-0-8-5-00_bin-263","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodospirillales_A","f__UBA1479","g__UBA1479","s__",7,1,NA,NA
+"132","prok","IO-all-SRF-0-8-5-00_bin-320","d__Bacteria","NA","NA","NA","p__Myxococcota","c__Polyangia","o__Polyangiales","f__","g__","s__",2,1,NA,NA
+"133","prok","SPO-all-SRF-5-20-00_bin-155","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__DEV007","g__EC70","s__EC70 sp002684575",3,1,NA,NA
+"134","prok","MS-all-SRF-0-8-5-00_bin-432","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Halieaceae","g__Luminiphilus","s__",2,2,NA,NA
+"135","prok","MS-all-SRF-180-2000-00_bin-61","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Opitutales","f__UBA4506","g__","s__",1,1,NA,NA
+"136","prok","NPO-all-DCM-0-8-5-00_bin-402","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__UBA1135","o__UBA2386","f__UBA2386","g__GCA-2684655","s__",1,1,NA,NA
+"137","prok","SPO-all-SRF-0-8-5-00_bin-295","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Coxiellales","f__Coxiellaceae","g__","s__",7,1,NA,NA
+"138","prok","SPO-all-SRF-5-20-00_bin-31","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rickettsiales","f__Rickettsiaceae","g__GCA-2402195","s__",1,3,NA,NA
+"139","prok","NAO-all-SRF-0-8-5-00_bin-159","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Nevskiales","f__Nevskiaceae","g__HR-BB","s__",7,3,NA,NA
+"140","prok","IO-all-MES-0-8-5-00_bin-47","d__Bacteria","NA","NA","NA","p__Poribacteria","c__WGA-4E","o__GCA-2687025","f__GCA-2687025","g__GCA-2687025","s__GCA-2687025 sp002687025",2,5,NA,NA
+"141","prok","NPO-all-SRF-0-8-5-00_bin-635","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Sphingomonadales","f__Sphingomonadaceae","g__Novosphingobium","s__Novosphingobium sp002684595",7,1,NA,NA
+"142","prok","SPO-CHIL-SRF-0-8-5-00_bin-11","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Pseudohongiellaceae","g__OM182","s__",7,2,NA,NA
+"143","prok","NAO-all-SRF-0-8-5-00_bin-198","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__UBA1096","g__UBA1096","s__",7,1,NA,NA
+"144","prok","SPO-SPSG-SRF-20-180-00_bin-10","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MED-G13","s__",3,2,NA,NA
+"145","prok","NAO-all-SRF-0-8-5-00_bin-525","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__UBA8108","o__UBA1146","f__UBA1146","g__UBA12191","s__UBA12191 sp003540375",4,1,NA,NA
+"146","prok","NPO-all-DCM-0-8-5-00_bin-28","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",3,2,NA,NA
+"147","prok","SAO-all-DCM-0-8-5-00_bin-395","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__UBA6615","f__UBA6615","g__NAT5454","s__NAT5454 sp002713365",7,1,NA,NA
+"148","prok","SPO-all-SRF-20-180-00_bin-49","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__Psychroflexus","s__",3,2,NA,NA
+"149","prok","IO-all-DCM-0-8-5-00_bin-284","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__AAA164-E04","g__UBA7971","s__UBA7971 sp002686885",7,1,NA,NA
+"150","prok","NAO-all-MIX-0-8-5-00_bin-7","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002420305",4,5,NA,NA
+"151","prok","NAO-all-SRF-0-8-5-00_bin-402","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Acidimicrobiia","o__Microtrichales","f__Ilumatobacteraceae","g__Ilumatobacter_A","s__Ilumatobacter_A sp002698945",7,1,NA,NA
+"152","prok","MS-all-SRF-0-8-5-00_bin-378","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__","g__","s__",7,1,NA,NA
+"153","prok","SAO-all-DCM-0-8-5-00_bin-236","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__MED-G13","s__MED-G13 sp002697255",7,1,NA,NA
+"154","prok","SO-all-DCM-0-8-5-00_bin-46","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Nitrincolaceae","g__Rs1","s__",2,11,NA,NA
+"155","prok","NPO-all-SRF-5-20-00_bin-22","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002687115",3,6,NA,NA
+"156","prok","SPO-all-SRF-0-8-5-00_bin-881","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__UBA796","g__","s__",3,1,NA,NA
+"157","prok","SPO-all-SRF-0-8-5-00_bin-836","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",3,2,NA,NA
+"158","prok","SAO-all-DCM-0-8-5-00_bin-139","d__Bacteria","NA","NA","NA","p__Myxococcota","c__UBA796","o__UBA796","f__","g__","s__",4,8,NA,NA
+"159","prok","MS-all-DCM-0-8-5-00_bin-506","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__HTCC2089","g__UBA4421","s__UBA4421 sp002450255",2,2,NA,NA
+"160","prok","SPO-SPSG-SRF-0-8-5-00_bin-400","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002709915",3,3,NA,NA
+"161","prok","MS-all-SRF-0-8-5-00_bin-369","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodospirillales_A","f__UBA2165","g__TMED23","s__TMED23 sp002168115",7,2,NA,NA
+"162","prok","RS-all-SRF-20-180-00_bin-6","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002724845",6,1,NA,NA
+"163","prok","RS-all-SRF-180-2000-00_bin-6","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002724845",6,1,NA,NA
+"164","prok","SPO-all-SRF-5-20-00_bin-142","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Halieaceae","g__Halioglobus","s__",3,1,NA,NA
+"165","prok","SPO-SPSG-MIX-0-8-5-00_bin-231","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002724845",6,1,NA,NA
+"166","prok","NAO-all-SRF-0-8-5-00_bin-236","d__Bacteria","NA","NA","NA","p__Cyanobacteria","c__Cyanobacteriia","o__Synechococcales","f__Cyanobiaceae","g__Synechococcus_C","s__Synechococcus_C sp002701375",7,1,NA,NA
+"167","prok","MS-all-SRF-180-2000-00_bin-7","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rickettsiales","f__Rickettsiaceae","g__GCA-2402195","s__",1,6,NA,NA
+"168","prok","SPO-all-SRF-0-8-5-00_bin-18","d__Bacteria","NA","NA","NA","p__Bacteroidota","c__Bacteroidia","o__Flavobacteriales","f__Flavobacteriaceae","g__UBA3537","s__",2,7,NA,NA
+"169","prok","SPO-SPSG-MIX-0-8-5-00_bin-154","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodospirillales_A","f__GCA-2722175","g__GCA-2722175","s__GCA-2722175 sp002722175",7,2,NA,NA
+"170","prok","SPO-PEOD-SRF-0-8-5-00_bin-100","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__UBA12014","s__UBA12014 sp002684855",3,1,NA,NA
+"171","prok","SPO-all-SRF-20-180-00_bin-155","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__Halieaceae","g__","s__",3,1,NA,NA
+"172","prok","SPO-SPSG-SRF-0-8-5-00_bin-495","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__GCA-002862325","s__",3,2,NA,NA
+"173","prok","MS-all-DCM-0-8-5-00_bin-450","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Opitutales","f__Opitutaceae","g__","s__",1,1,NA,NA
+"174","prok","SPO-SPSG-DCM-0-8-5-00_bin-300","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002380675",3,4,NA,NA
+"175","prok","NAO-all-MIX-0-8-5-00_bin-190","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__","s__",4,1,NA,NA
+"176","prok","NAO-all-MIX-0-8-5-00_bin-149","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Acidimicrobiia","o__Microtrichales","f__MedAcidi-G1","g__MedAcidi-G1","s__MedAcidi-G1 sp000817085",7,2,NA,NA
+"177","prok","SPO-PEOD-DCM-0-8-5-00_bin-81","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__DEV007","g__EC70","s__EC70 sp002684575",7,3,NA,NA
+"178","prok","SPO-all-SRF-0-8-5-00_bin-385","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__","s__",3,1,NA,NA
+"179","prok","IO-all-SRF-0-8-5-00_bin-172","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Verrucomicrobiales","f__Akkermansiaceae","g__Roseibacillus","s__Roseibacillus sp002686085",3,1,NA,NA
+"180","prok","NAO-all-MES-0-8-5-00_bin-257","d__Bacteria","NA","NA","NA","p__Spirochaetota","c__Spirochaetia","o__Spirochaetales","f__RBG-16-67-19","g__Bin103","s__",7,3,NA,NA
+"181","prok","MS-all-DCM-0-8-5-00_bin-116","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__HTCC2089","g__UBA7455","s__UBA7455 sp002690865",7,1,NA,NA
+"182","prok","NPO-all-SRF-0-8-5-00_bin-431","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__UBA1135","o__UBA2386","f__UBA2386","g__GCA-2684655","s__",3,1,NA,NA
+"183","prok","SPO-SPSG-SRF-5-20-00_bin-65","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Planctomycetes","o__Pirellulales","f__UBA1268","g__UBA1268","s__UBA1268 sp003509235",3,1,NA,NA
+"184","prok","SPO-SPSG-SRF-0-8-5-00_bin-278","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__UBA8087","s__UBA8087 sp002709755",3,2,NA,NA
+"185","prok","NPO-all-SRF-5-20-00_bin-40","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Actinobacteria","o__Nanopelagicales","f__GCA-2699445","g__GCA-2699445","s__",3,1,NA,NA
+"186","prok","SPO-SPSG-DCM-0-8-5-00_bin-319","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Actinobacteria","o__Mycobacteriales","f__Mycobacteriaceae","g__Mycolicibacterium","s__",7,1,NA,NA
+"187","prok","SPO-CHIL-SRF-0-8-5-00_bin-50","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__UBA1668","s__UBA1668 sp002364555",7,1,NA,NA
+"188","prok","SPO-PEOD-DCM-0-8-5-00_bin-109","d__Bacteria","NA","NA","NA","p__Verrucomicrobiota","c__Verrucomicrobiae","o__Pedosphaerales","f__UBA1096","g__UBA1096","s__UBA1096 sp002684915",3,1,NA,NA
+"189","prok","MS-all-DCM-0-8-5-00_bin-302","d__Bacteria","NA","NA","NA","p__Actinobacteriota","c__Acidimicrobiia","o__Microtrichales","f__TK06","g__MedAcidi-G3","s__MedAcidi-G3 sp000817105",7,1,NA,NA
+"190","prok","IO-all-DCM-0-8-5-00_bin-15","d__Bacteria","NA","NA","NA","p__Marinisomatota","c__Marinisomatia","o__Marinisomatales","f__TCS55","g__TMED108","s__TMED108 sp002702225",7,1,NA,NA
+"191","prok","MS-all-DCM-0-8-5-00_bin-428","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Rhodobacterales","f__Rhodobacteraceae","g__HIMB11","s__",7,3,NA,NA
+"192","prok","NAO-all-SRF-0-8-5-00_bin-393","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Sphingomonadales","f__Sphingomonadaceae","g__Sphingobium","s__Sphingobium xenophagum",7,1,NA,NA
+"193","prok","SPO-SPSG-SRF-0-8-5-00_bin-487","d__Bacteria","NA","NA","NA","p__Chloroflexota","c__Dehalococcoidia","o__UBA1151","f__TMED-70","g__TMED-70","s__TMED-70 sp002703265",7,1,NA,NA
+"194","prok","SAO-all-SRF-180-2000-00_bin-64","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Pseudomonadales","f__","g__","s__",1,1,NA,NA
+"195","prok","SAO-all-DCM-0-8-5-00_bin-313","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__SAR86","f__D2472","g__","s__",7,2,NA,NA
+"196","prok","SPO-all-SRF-0-8-5-00_bin-958","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Gammaproteobacteria","o__Burkholderiales","f__Burkholderiaceae","g__UBA7377","s__",7,1,NA,NA
+"197","prok","SPO-all-SRF-0-8-5-00_bin-514","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Phycisphaerae","o__Phycisphaerales","f__SM1A02","g__","s__",3,1,NA,NA
+"198","prok","IO-all-DCM-0-8-5-00_bin-218","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp001627655",7,1,NA,NA
+"199","prok","SPO-SPSG-SRF-0-8-5-00_bin-324","d__Bacteria","NA","NA","NA","p__Bdellovibrionota","c__Bacteriovoracia","o__Bacteriovoracales","f__Bacteriovoracaceae","g__UBA7317","s__UBA7317 sp002474345",7,1,NA,NA
+"200","prok","IO-all-SRF-0-8-5-00_bin-383","d__Bacteria","NA","NA","NA","p__Proteobacteria","c__Alphaproteobacteria","o__Puniceispirillales","f__Puniceispirillaceae","g__UBA8309","s__UBA8309 sp002695585",7,1,NA,NA
+"201","prok","SAO-all-DCM-0-8-5-00_bin-464","d__Bacteria","NA","NA","NA","p__Planctomycetota","c__Planctomycetes","o__Pirellulales","f__Pirellulaceae","g__Mariniblastus","s__",3,1,NA,NA
